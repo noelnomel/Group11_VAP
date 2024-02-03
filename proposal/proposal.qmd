@@ -1,0 +1,12 @@
+---
+title: "Project Proposal"
+date: "3 February 2024"
+date-modified: "last-modified"
+author: Wan Kee, Vanessa, Noel
+format: html
+execute: 
+  echo: true # all code chunks will appear
+  eval: true # all code chunks will run live
+  warning: false # do not display warning message
+editor: visual
+---
