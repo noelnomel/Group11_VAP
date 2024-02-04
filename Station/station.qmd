@@ -1,0 +1,39 @@
+---
+title: "Stations"
+---
+
+```{r}
+#library(devtools)
+#install_github("andrew-loh/neaSG", force = TRUE)
+```
+
+```{r}
+pacman::p_load(tmap, sf, tidyverse, sfdep, mapview, leaflet.providers, neaSG)
+```
+
+```{r}
+stn <- get_weatherstns()
+```
+
+```{r}
+glimpse(stn)
+```
+
+
+```{r}
+stn_sf <- st_as_sf(stn, 
+                   coords = c("location.longitude", "location.latitude"), crs = 4326)
+```
+
+```{r}
+glimpse(stn_sf)
+```
+
+```{r}
+tmap_mode("view")
+
+tm_basemap("CartoDB.Positron") +
+  tm_shape(stn_sf)+
+  tm_dots(col = "black", size = 0.1)
+```
+
