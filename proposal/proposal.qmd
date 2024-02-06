@@ -10,3 +10,39 @@ execute:
   warning: false # do not display warning message
 editor: visual
 ---
+
+[![Source: Today Online](https://onecms-res.cloudinary.com/image/upload/s--DSRC9SfJ--/f_auto,q_auto/c_fill,g_auto,h_622,w_830/v1/mediacorp/tdy/image/2022/07/19/20220719_reuters_heatwave.jpg?itok=pvMvUHUm){fig-align="center"}](https://www.todayonline.com/singapore/explainer-what-causing-heatwaves-around-world-and-will-singapore-be-affected-1947631)
+
+# 1. Introduction
+
+> "Climate change is an existential threat for all of us, but especially for a small island state like Singapore. ... Singapore will do our part, together with other countries, to address climate change. "
+>
+> Mr Lee Hsien Loong,
+>
+> Prime Minister of Singapore
+>
+> Video message at the United Nations Climate Ambition Summit, 12 December 2020
+
+The emission of greenhouse gases, primarily from human activities, has unequivocally increased global warming; global surface temperature was 1.09°C higher in 2011 - 2020 than 1850 - 1900[^1]. Closer to home, the Meteorological Service Singapore's (MSS) Centre for Climate Researcg Singapore (CCRS) and the UK Met Office, conducted a study to contextualise the findings from the Intergovernmental Panel on Climate Change's Sixth Assessment Report. The study found that mean temperatures rose at an average rate of 0.25°C per decade, and that daily mean temperatures are projected to increase by 1.4°C to 4.6°C[^2].
+
+[^1]: https://www.ipcc.ch/report/ar6/syr/downloads/report/IPCC_AR6_SYR_SPM.pdf
+
+[^2]: https://www.nccs.gov.sg/singapores-climate-action/impact-of-climate-change-in-singapore/
+
+Furthermore, a warmer climate leads to the thermal expansion of the sea and the melting of glaciers and ice caps, which lead to rising sea levels, threatening our island nation[^3]. According to the studyt, the sea level in the Straits of Singapore rose at the rate of 1.2mm to 1.7mm per year between 1975 to 2009, and is projected to increase by about 1m by the end of the century.
+
+[^3]: https://www.mse.gov.sg/policies/climate-change#:\~:text=Understanding%20Climate%20Change&text=A%20warmer%20climate%20leads%20to,more%20frequent%20extreme%20weather%20events.
+
+As a low-lying island state, Singapore is very vulnerable to the effects of climate change[^4]. The need to act is urgent and the Singapore government expects to spend S\$100 billion or more over the next 100 years to invest in engineering solutions to protect Singapore's coastlines from rising sea levels.
+
+[^4]: https://www.todayonline.com/singapore/explainer-why-climate-change-should-matter-singaporeans-and-what-government-doing-about-it
+
+# 2. Project Objectives
+
+# 3. Data
+
+# 4. Methodology and Analysis
+
+# 5. Scope of Work
+
+# 6. Conclusion
