@@ -39,7 +39,7 @@ As a low-lying island state, Singapore is very vulnerable to the effects of clim
 
 # 2. Project Objectives
 
-The motivation of the project is to:
+The motivation of the project is to explore the compelling case of the imapct of climate change on Singapore and how it threatens Singapore's existence. This is of grave concern to all Singaporeans with a stake in the country. The main objectives of the project can be broken down into the following areas:
 
 1.  Create clear and easy-to-understand visualisations of past trends to increase the public's awareness,
 
@@ -49,14 +49,48 @@ The motivation of the project is to:
 
 To achieve the objectives of the project, an online application will be developed using RShiny to provide an interactive platform for members of the public to gain clear insights on Singapore's weather trends. Furthermore, the app will allow users to model outcomes of possible futures using interactive parameters.
 
-After viewing the possible outcomes that are affected by individual action, users become more aware an
-
-A RShiny app will be developed to visualise the weather patterns and trends in Singapore over the years, perform statistical analysis as well as forecast future trends, to help the government in their decision-making.
-
 # 3. Data
+
+The dataset used in this study is prepared and maintained by the Meterological Service Singapore (MSS). The MSS collects rainfall, temperature, and wind speed data from available weather stations since 1980. However, a quick scan of the [MSS Historical Daily Records site](http://www.weather.gov.sg/climate-historical-daily/) shows that not all weather stations recorded all data types from 1980. This is because manual observations were replaced with automated instruments from 2009[^5].
+
+[^5]: http://www.weather.gov.sg/wp-content/uploads/2022/06/Station_Records.pdf
+
+This means that there are some gaps in the data set:
+
+-   37 out of the 63 weather stations only recorded rainfall data starting between 2009 and 2011.
+
+-   41 out of the 63 weather stations does not record temperature data, even up to now.
+
+-   Out of the 22 weather stations that record temperature data, only three stations recorded data from the 1980s (from 1982 in Changi and from 1986 in Tengah and Paya Lebar).
+
+The gaps in the data set can be addressed by....
+
+For the purpose of this project, we will analyse the historical temperature and rainfall data collected by MSS.
+
+The proposed methodologies to be used in this study are elaborated in the next section.
 
 # 4. Methodology and Analysis
 
+## 4.1. Exploratory Data Analysis and Visualisations
+
+Firstly, we will create visualisations to conduct exploratory data analysis to discover trends in Singapore's historical temperature and rainfall data. Some visualisations that can be used include:
+
+-   Time series line chart to plot changes in mean temperature across the years
+
+-   Bar chart to plot trends in total and average rainfall by year
+
+-   Heatmap to plot temperature and rainfall by month and year
+
+-   Ridgeline plots to plot mean and max temperature and rainfall by region
+
+Some interactivity can be included in the plots, such as coordinated multiple views to show temperature and rainfall data side-by-side. Animations can be used to showcase changes in temperature and rainfall over the years.
+
+## 4.2. Predictive Model
+
 # 5. Scope of Work
 
+(Insert picture of gantt chart)
+
 # 6. Conclusion
+
+The aim of this project is to create an interactive platform on RShiny to visualise the past trends and to predict the future trends of Singapore's climate. This platform can be used as an educational tool to help raise awareness on the urgency of the situation and to urge individuals and organisations to make incremental lifestyle changes that contribute to the Singapore Green Plan 2030.
