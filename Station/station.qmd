@@ -19,7 +19,6 @@ stn <- get_weatherstns()
 glimpse(stn)
 ```
 
-
 ```{r}
 stn_sf <- st_as_sf(stn, 
                    coords = c("location.longitude", "location.latitude"), crs = 4326)
@@ -36,4 +35,3 @@ tm_basemap("CartoDB.Positron") +
   tm_shape(stn_sf)+
   tm_dots(col = "black", size = 0.1)
 ```
-

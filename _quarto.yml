@@ -2,20 +2,23 @@ project:
   type: website
 
 website:
-  title: "Group11_VAP"
+  title: "The Heat is On!"
   navbar:
     left:
-      - href: index.qmd
-        text: Home
+      - text: Home
+        href: index.qmd
       - about.qmd
       - text: Station
         href: Station/station.html
+      - text: Proposal
+        href: proposal/proposal.html
+        
 
-format:
-  html:
-    theme: cosmo
-    css: styles.css
-    toc: true
+#format:
+#  html:
+#    theme: cosmo
+#    css: styles.css
+#    toc: true
 
-editor: visual
+# editor: visual
 
