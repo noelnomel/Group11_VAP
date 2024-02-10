@@ -7,18 +7,20 @@ website:
     left:
       - text: Home
         href: index.qmd
-      - about.qmd
-      - text: Station
-        href: Station/station.html
       - text: Proposal
         href: proposal/proposal.html
-        
+      - text: Station
+        href: Station/station.html
+      - text: Rainfall
+      - text: Temperature
+      - text: Relative Humidity
+      - text: Wind
 
-#format:
-#  html:
-#    theme: cosmo
-#    css: styles.css
-#    toc: true
+format:
+  html:
+    theme: sketchy
+    css: styles.css
+    toc: true
 
-# editor: visual
+editor: visual
 

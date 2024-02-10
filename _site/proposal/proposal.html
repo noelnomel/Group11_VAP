@@ -63,9 +63,10 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
+<link rel="stylesheet" href="../styles.css">
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -87,17 +88,21 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../about.html" rel="" target="">
- <span class="menu-text">About</span></a>
+    <a class="nav-link active" href="../proposal/proposal.html" rel="" target="" aria-current="page">
+ <span class="menu-text">Proposal</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="../Station/station.html" rel="" target="">
  <span class="menu-text">Station</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="../proposal/proposal.html" rel="" target="" aria-current="page">
- <span class="menu-text">Proposal</span></a>
-  </li>  
+  <li class="dropdown-header">
+ <span class="menu-text">Rainfall</span></li>
+  <li class="dropdown-header">
+ <span class="menu-text">Temperature</span></li>
+  <li class="dropdown-header">
+ <span class="menu-text">Relative Humidity</span></li>
+  <li class="dropdown-header">
+ <span class="menu-text">Wind</span></li>
 </ul>
             <div class="quarto-navbar-tools ms-auto">
 </div>
@@ -109,7 +114,24 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">1. Introduction</a></li>
+  <li><a href="#project-objectives" id="toc-project-objectives" class="nav-link" data-scroll-target="#project-objectives">2. Project Objectives</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">3. Data</a></li>
+  <li><a href="#methodology-and-analysis" id="toc-methodology-and-analysis" class="nav-link" data-scroll-target="#methodology-and-analysis">4. Methodology and Analysis</a>
+  <ul class="collapse">
+  <li><a href="#exploratory-data-analysis-and-visualizations" id="toc-exploratory-data-analysis-and-visualizations" class="nav-link" data-scroll-target="#exploratory-data-analysis-and-visualizations">4.1. Exploratory Data Analysis and Visualizations</a></li>
+  <li><a href="#predictive-model" id="toc-predictive-model" class="nav-link" data-scroll-target="#predictive-model">4.2. Predictive Model</a></li>
+  </ul></li>
+  <li><a href="#scope-of-work" id="toc-scope-of-work" class="nav-link" data-scroll-target="#scope-of-work">5. Scope of Work</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">6. Conclusion</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
@@ -139,7 +161,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 9, 2024</p>
+      <p class="date-modified">February 10, 2024</p>
     </div>
   </div>
     
@@ -156,63 +178,81 @@ ul.task-list li input[type="checkbox"] {
 </div>
 <section id="introduction" class="level1">
 <h1>1. Introduction</h1>
-<blockquote class="blockquote">
-<p>“Climate change is an existential threat for all of us, but especially for a small island state like Singapore. … Singapore will do our part, together with other countries, to address climate change.”</p>
-<p>Mr Lee Hsien Loong,</p>
-<p>Prime Minister of Singapore</p>
-<p>Video message at the United Nations Climate Ambition Summit, 12 December 2020</p>
-</blockquote>
-<p>The emission of greenhouse gases, primarily from human activities, has unequivocally increased global warming; global surface temperature was 1.09°C higher in 2011 - 2020 than 1850 - 1900<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. Closer to home, the Meteorological Service Singapore’s (MSS) Centre for Climate ResearcghSingapore (CCRS) and the UK Met Office, conducted a study to contextualise the findings from the Intergovernmental Panel on Climate Change’s Sixth Assessment Report. The study found that mean temperatures rose at an average rate of 0.25°C per decade, and that daily mean temperatures are projected to increase by 1.4°C to 4.6°C<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
-<p>Furthermore, a warmer climate leads to the thermal expansion of the sea and the melting of glaciers and ice caps, which lead to rising sea levels, threatening our island nation<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. According to the study, the sea level in the Straits of Singapore rose at the rate of 1.2mm to 1.7mm per year between 1975 to 2009, and is projected to increase by about 1m by the end of the century.</p>
-<p>As a low-lying island state, Singapore is very vulnerable to the effects of climate change<a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>. The need to act is urgent and the Singapore government expects to spend S$100 billion or more over the next 100 years to invest in engineering solutions to protect Singapore’s coastlines from rising sea levels.</p>
+<p>In our efforts to combat the adverse effects of climate change, particularly on island nations like Singapore, Prime Minister Lee Hsien Loong has committed to concerted international efforts to mitigate this global challenge. At the United Nations Climate Ambition Summit on 12 December 2020, he emphasized, “Climate change is an existential threat for all of us, but especially for a small island state like Singapore. … Singapore will do our part, together with other countries, to address climate change.”</p>
+<p>Scientific evidence supports the urgency of this commitment. A joint study by the Meteorological Service Singapore’s (MSS) Centre for Climate Research Singapore (CCRS) and the UK Met Office contextualised the findings of the Intergovernmental Panel on Climate Change’s Sixth Assessment Report <a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. It revealed that mean temperatures rose at an average rate of 0.25°C per decade and that daily mean temperatures are projected to increase between 1.4°C to 4.6°C by the end of 21st Century. <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<p>The implications for sea-level rise are profound., From 1975 to 2009, the sea level in the Straits of Singapore rose at the rate of 1.2 mm to 1.7 mm per year and is projected to increase by about 1 meter by 2100 <a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>. The repercussions are dire for Singapore as a low-lying state; its vulnerability to the effects of climate change cannot be undermined <a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.</p>
+<p>In response, Singapore is prepared to invest significantly, at least S$100 billion over the next 100 years in engineering solutions to protect Singapore’s coastlines from rising sea levels. This proactive stance reflects a deep understanding of the looming threats and a resolve to protect the nation’s future.</p>
 </section>
 <section id="project-objectives" class="level1">
 <h1>2. Project Objectives</h1>
-<p>The motivation of the project is to explore the compelling case of the imapct of climate change on Singapore and how it threatens Singapore’s existence. This is of grave concern to all Singaporeans with a stake in the country. The main objectives of the project can be broken down into the following areas:</p>
+<p>The motivation of the project is to maximise the potential of publicly available data through the exploration of the impact of climate change on Singapore and how it threatens Singapore’s existence. This is of grave concern to all Singaporeans with a stake in the country. The main objectives of the project can be broken down into the following areas:</p>
 <ol type="1">
-<li><p>Create clear and easy-to-understand visualisations of past trends to increase the public’s awareness,</p></li>
-<li><p>Model and predict future trends to assist the government’s efforts using historical data, and</p></li>
-<li><p>Drive the need for lifestyle changes to slow down the impact of climate change.</p></li>
+<li><p>Create clear and easy-to-understand visualisations of past trends to increase the public’s awareness</p></li>
+<li><p>Model and predict future trends to assist the government’s efforts using historical data.</p></li>
 </ol>
-<p>To achieve the objectives of the project, an online application will be developed using RShiny to provide an interactive platform for members of the public to gain clear insights on Singapore’s weather trends. Furthermore, the app will allow users to model outcomes of possible futures using interactive parameters.</p>
+<p>To meet the the objectives of increasing public awareness and assisting the government’s efforts on the impact of climate change, a public webpage equipped with data visualisation and interactive applications will be developed for members of the public to gain clear insights into Singapore’s weather trends. The overall outcomes of the project are:</p>
+<ol type="1">
+<li><p>Educate through interactive data visualisations where the webpage will include a dashboard featuring a variety of visualisations that depict pas climate data and trends. Interactive parameters allow the users to select different time periods or types of data to visualize.</p></li>
+<li><p>Engage users with interactive predictive models through sliders and input fields to simulate different environmental variables and visualize the outcomes of different actions taken today on future climate conditions.</p></li>
+<li><p>Facilitate knowledge sharing and community involvement by implementing a forum or discussion board where the public users can discuss climate issues and propose solutions.</p></li>
+</ol>
 </section>
 <section id="data" class="level1">
 <h1>3. Data</h1>
-<p>The dataset used in this study is prepared and maintained by the Meterological Service Singapore (MSS). The MSS collects rainfall, temperature, and wind speed data from available weather stations since 1980. However, a quick scan of the <a href="http://www.weather.gov.sg/climate-historical-daily/">MSS Historical Daily Records site</a> shows that not all weather stations recorded all data types from 1980. This is because manual observations were replaced with automated instruments from 2009<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>.</p>
+<p>The dataset used in this study is prepared and maintained by the Meteorological Service Singapore (MSS). The MSS collects rainfall, temperature, and wind speed data from available weather stations since 1980. However, a quick scan of the <a href="http://www.weather.gov.sg/climate-historical-daily/">MSS Historical Daily Records site</a> shows that not all weather stations recorded all data types from 1980. This is because manual observations were replaced with automated instruments from 2009<a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a>.</p>
 <p>This means that there are some gaps in the data set:</p>
 <ul>
 <li><p>37 out of the 63 weather stations only recorded rainfall data starting between 2009 and 2011.</p></li>
-<li><p>41 out of the 63 weather stations does not record temperature data, even up to now.</p></li>
+<li><p>41 out of the 63 weather stations do not record temperature data, even up to now.</p></li>
 <li><p>Out of the 22 weather stations that record temperature data, only three stations recorded data from the 1980s (from 1982 in Changi and from 1986 in Tengah and Paya Lebar).</p></li>
 </ul>
-<p>The gaps in the data set can be addressed by….</p>
-<p>For the purpose of this project, we will analyse the historical temperature and rainfall data collected by MSS.</p>
-<p>The proposed methodologies to be used in this study are elaborated in the next section.</p>
+<p>For this project, we will analyse the historical temperature and rainfall data collected by MSS based on the 22 weather stations (Table 1).</p>
+<p>The selected stations with complete datasets from 1980 onwards provide a long-term perspective on climate trends, which is crucial for accurate modelling and prediction. Automated instruments from 2009 enhance data reliability and allow for continuous monitoring without manual intervention gaps.</p>
+<p><img src="../images/Table1.png" class="img-fluid"></p>
+<p>Table 1 presents the overview of the meteorological data recording periods across 22 selected weather stations in Singapore.</p>
+<p>The selected stations are well-distributed across Singapore’s geography, covering coastal areas, inland locations and urban centers (Figure 1). This distribution ensures that the stations capture various microclimates within the country.</p>
+<p><img src="../images/Figure1.png" class="img-fluid"></p>
+<p>Figure 1 juxtaposes two maps of Singapore to contrast the distribution of weather stations across the island displaying 63 stations (left) and 22 selected stations (right).</p>
 </section>
 <section id="methodology-and-analysis" class="level1">
 <h1>4. Methodology and Analysis</h1>
-<section id="exploratory-data-analysis-and-visualisations" class="level2">
-<h2 class="anchored" data-anchor-id="exploratory-data-analysis-and-visualisations">4.1. Exploratory Data Analysis and Visualisations</h2>
-<p>Firstly, we will create visualisations to conduct exploratory data analysis to discover trends in Singapore’s historical temperature and rainfall data. Some visualisations that can be used include:</p>
+<section id="exploratory-data-analysis-and-visualizations" class="level2">
+<h2 class="anchored" data-anchor-id="exploratory-data-analysis-and-visualizations">4.1. Exploratory Data Analysis and Visualizations</h2>
+<p>Firstly, our exploratory data analysis will uncover trends in Singapore’s historical climate data through a range of visualizations to convey our finding effectively:</p>
 <ul>
-<li><p>Time series line chart to plot changes in mean temperature across the years</p></li>
-<li><p>Bar chart to plot trends in total and average rainfall by year</p></li>
-<li><p>Heatmap to plot temperature and rainfall by month and year</p></li>
-<li><p>Ridgeline plots to plot mean and max temperature and rainfall by region</p></li>
+<li><p>Time series analysis utilizes time-dependent decomposition to discern the variations, trends and anomalies in the climate data across the periods</p></li>
+<li><p>Comparative analysis using box plots and violin plots to highlight the differences in climate data across periods or locations • Heatmap to plot changes in climate data by periods</p></li>
+<li><p>Distribution analysis through ridgeline plots to show the distribution of climate data by specific periods or locations</p></li>
+<li><p>Correlation matrix between climate data to investigate the inter dependencies between the climate data</p></li>
+<li><p>Interactive maps to show geographical impacts of climate change, such as potential flooding areas and urban heat issues.</p></li>
 </ul>
-<p>Some interactivity can be included in the plots, such as coordinated multiple views to show temperature and rainfall data side-by-side. Animations can be used to showcase changes in temperature and rainfall over the years.</p>
+<p>The visualizations will be created using R packages;<code>ggplot2</code> for foundational graphics, extensions such as <code>ggridges</code> for ridgeline plots, <code>ggthemes</code> and <code>patchwork</code> for styling and layouts. Interactive graphics will be incorporated using <code>ggiraph</code> and <code>plotly</code> and the animations produced via <code>gganimate</code>.</p>
+<p>Interactivity can be included in the visualizations, such as coordinated multiple views to show temperature and rainfall data side-by-side. Animations can be used to showcase changes in temperature and rainfall over the years.</p>
 </section>
 <section id="predictive-model" class="level2">
 <h2 class="anchored" data-anchor-id="predictive-model">4.2. Predictive Model</h2>
+<p>We aim to forecast future climate trends by exploring a suite of time series forecasting models:</p>
+<ol type="1">
+<li><p>Time series forecasting is the process of using historical data to predict future values of a variable that changes over time. It is a common and useful technique for weather prediction. &nbsp;There are many types of models for time series forecasting, such as exponential smoothing, ARIMA, SARIMA, VAR and neural networks.</p></li>
+<li><p>Machine learning approaches, such as Random Forest and Gradient Boosting Machines, for non-linear trend capturing.</p></li>
+</ol>
+<p>We will compare and evaluate different models based on their predictive performance in terms of accuracy, precision and recall using evaluation metrics such as cross-validation, AIC and BIC, and forecasting accuracy measures using RMSE. The interpretability of models will also be a key consideration to ensure that the findings are understandable to the public (Figure 2).</p>
+<p><img src="../images/Figure2.png" class="img-fluid" width="600"></p>
+<p>Figure 2 is a prototype of RShiny application.</p>
 </section>
 </section>
 <section id="scope-of-work" class="level1">
 <h1>5. Scope of Work</h1>
-<p>(Insert picture of gantt chart)</p>
+<p>The project will begin with an initial planning and research phase where a comprehensive literature review will be conducted to understand existing climate models and their applicability to Singapore.</p>
+<p>In the data collection and preprocessing stage, historical climate data will be gathered from reliable sources. This data will undergo rigorous cleaning and preprocessing to prepare it for analysis. Exploratory data analysis will then be carried out to detect patterns, trends, and outliers within the data, with preliminary visualizations developed to summarize these findings.</p>
+<p>The core of the project will involve developing and validating predictive models using various statistical and machine learning techniques. These models will be evaluated and refined based on their performance metrics to ensure accuracy and reliability. The project will culminate in a final analysis based on the predictive models to inform the public. Upon completion, all project deliverables will be finalized, and a project closure phase will ensure all data and documentation are archived, and training is provided for the use of the developed tools.</p>
+<p>Finally, the project will outline a strategy for ongoing monitoring of climate data and regular updates to the models. This will also identify opportunities for further research to enhance predictive capabilities and the overall user experience of the developed tools.</p>
+<p><img src="../images/Figure3.png" class="img-fluid"></p>
+<p>Figure 3 is the time management Gantt chart of this project.</p>
 </section>
 <section id="conclusion" class="level1">
 <h1>6. Conclusion</h1>
-<p>The aim of this project is to create an interactive platform on RShiny to visualise the past trends and to predict the future trends of Singapore’s climate. This platform can be used as an educational tool to help raise awareness on the urgency of the situation and to urge individuals and organisations to make incremental lifestyle changes that contribute to the Singapore Green Plan 2030.</p>
+<p>This project aims to create an interactive platform on an RShiny app to visualize historical climate trends and forecast future patterns of Singapore’s temperature and rainfall. This application serves &nbsp;as an dynamic educational tool to help raise awareness on the urgency of climate change and inspire individuals and organisations to make incremental lifestyle changes and adopt sustainable practices that align with the objectives &nbsp;Singapore Green Plan 2030. By facilitating a deeper understanding of environmental changes through accessible data visualizations and predictive modelling, the project seeks to foster a proactive approach to environmental stewardship within the community.</p>
 
 
 </section>

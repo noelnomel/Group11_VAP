@@ -13,6 +13,7 @@ pacman::p_load(tmap, sf, tidyverse, sfdep, mapview, leaflet.providers, neaSG)
 
 ```{r}
 stn <- get_weatherstns()
+
 ```
 
 ```{r}
@@ -35,3 +36,17 @@ tm_basemap("CartoDB.Positron") +
   tm_shape(stn_sf)+
   tm_dots(col = "black", size = 0.1)
 ```
+```{r}
+stn_selected <- stn_sf %>% 
+  filter(id %in% c("S60", "S117", "S116", "S115", "S113", "S111", "S107", "S201", "S50", "S43", "S44", "S221", "S24", "S121", "S109", "S114", "S900", "S209", "S104"))
+         
+glimpse(stn_selected)
+```
+```{r}
+tmap_mode("view")
+
+tm_basemap("CartoDB.Positron") +
+  tm_shape(stn_selected)+
+  tm_dots(col = "black", size = 0.1)
+```
+
