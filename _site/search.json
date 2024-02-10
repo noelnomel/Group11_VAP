@@ -23,9 +23,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "Group 11",
+    "title": "Singapore’s Race Against Climate Change",
     "section": "",
-    "text": "This is a Quarto website.\nTo learn more about Quarto websites visit https://quarto.org/docs/websites."
+    "text": "This is Group 11’s Visual Analytics Project Site."
   },
   {
     "objectID": "proposal/proposal.html",
@@ -53,7 +53,7 @@
     "href": "proposal/proposal.html#predictive-model",
     "title": "Project Proposal",
     "section": "4.2. Predictive Model",
-    "text": "4.2. Predictive Model\nWe aim to forecast future climate trends by exploring a suite of time series forecasting models:\n\nTime series forecasting is the process of using historical data to predict future values of a variable that changes over time. It is a common and useful technique for weather prediction.  There are many types of models for time series forecasting, such as exponential smoothing, ARIMA, SARIMA, VAR and neural networks.\nMachine learning approaches, such as Random Forest and Gradient Boosting Machines, for non-linear trend capturing.\n\nWe will compare and evaluate different models based on their predictive performance in terms of accuracy, precision and recall using evaluation metrics such as cross-validation, AIC and BIC, and forecasting accuracy measures using RMSE. The interpretability of models will also be a key consideration to ensure that the findings are understandable to the public (Figure 2).\n\nFigure 2 is a prototype of RShiny application."
+    "text": "4.2. Predictive Model\nWe aim to forecast future climate trends by exploring a suite of time series forecasting models:\n\nTime series forecasting is the process of using historical data to predict future values of a variable that changes over time. It is a common and useful technique for weather prediction.  There are many types of models for time series forecasting, such as exponential smoothing, ARIMA, SARIMA, VAR and neural networks.\nMachine learning approaches, such as Random Forest and Gradient Boosting Machines, for non-linear trend capturing.\n\nWe will compare and evaluate different models based on their predictive performance in terms of accuracy, precision and recall using evaluation metrics such as cross-validation, AIC and BIC, and forecasting accuracy measures using RMSE. The interpretability of models will also be a key consideration to ensure that the findings are understandable to the public (Figure 2).\nFigure 2 is a prototype of RShiny application."
   },
   {
     "objectID": "content/elements.html",

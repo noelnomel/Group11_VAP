@@ -4,5 +4,4 @@ title: "Singapore’s Race Against Climate Change"
 
 ![](images/climatechange.webp){fig-align="center"}
 
-```         
-```
+This is Group 11's Visual Analytics Project Site.

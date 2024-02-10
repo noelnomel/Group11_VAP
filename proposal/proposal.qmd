@@ -15,7 +15,7 @@ editor: visual
 
 # 1. Introduction
 
-In our efforts to combat the adverse effects of climate change, particularly on island nations like Singapore, Prime Minister Lee Hsien Loong has committed to concerted international efforts to mitigate this global challenge. At the United Nations Climate Ambition Summit on 12 December 2020, he emphasized, "Climate change is an existential threat for all of us, but especially for a small island state like Singapore. … Singapore will do our part, together with other countries, to address climate change."
+In our efforts to combat the adverse effects of climate change, particularly on island nations like Singapore, Prime Minister Lee Hsien Loong has committed to concerted international efforts to mitigate this global challenge. At the United Nations Climate Ambition Summit on 12 December 2020, he emphasized, "Climate change is an existential threat for all of us, but especially for a small island state like Singapore. ... Singapore will do our part, together with other countries, to address climate change."
 
 Scientific evidence supports the urgency of this commitment. A joint study by the Meteorological Service Singapore's (MSS) Centre for Climate Research Singapore (CCRS) and the UK Met Office contextualised the findings of the Intergovernmental Panel on Climate Change's Sixth Assessment Report [^1]. It revealed that mean temperatures rose at an average rate of 0.25°C per decade and that daily mean temperatures are projected to increase between 1.4°C to 4.6°C by the end of 21st Century. [^2].
 
@@ -29,7 +29,7 @@ The implications for sea-level rise are profound., From 1975 to 2009, the sea le
 
 [^4]: https://www.todayonline.com/singapore/explainer-why-climate-change-should-matter-singaporeans-and-what-government-doing-about-it
 
-In response, Singapore is prepared to invest significantly, at least S\$100 billion over the next 100 years in engineering solutions to protect Singapore's coastlines from rising sea levels. This proactive stance reflects a deep understanding of the looming threats and a resolve to protect the nation’s future.
+In response, Singapore is prepared to invest significantly, at least S\$100 billion over the next 100 years in engineering solutions to protect Singapore's coastlines from rising sea levels. This proactive stance reflects a deep understanding of the looming threats and a resolve to protect the nation's future.
 
 # 2. Project Objectives
 
@@ -39,7 +39,7 @@ The motivation of the project is to maximise the potential of publicly available
 
 2.  Model and predict future trends to assist the government's efforts using historical data.
 
-To meet the the objectives of increasing public awareness and assisting the government’s efforts on the impact of climate change, a public webpage equipped with data visualisation and interactive applications will be developed for members of the public to gain clear insights into Singapore's weather trends. The overall outcomes of the project are:
+To meet the the objectives of increasing public awareness and assisting the government's efforts on the impact of climate change, a public webpage equipped with data visualisation and interactive applications will be developed for members of the public to gain clear insights into Singapore's weather trends. The overall outcomes of the project are:
 
 1.  Educate through interactive data visualisations where the webpage will include a dashboard featuring a variety of visualisations that depict pas climate data and trends. Interactive parameters allow the users to select different time periods or types of data to visualize.
 
@@ -105,9 +105,7 @@ We aim to forecast future climate trends by exploring a suite of time series for
 
 We will compare and evaluate different models based on their predictive performance in terms of accuracy, precision and recall using evaluation metrics such as cross-validation, AIC and BIC, and forecasting accuracy measures using RMSE. The interpretability of models will also be a key consideration to ensure that the findings are understandable to the public (Figure 2).
 
-![](/images/Figure2.png){width="600"}
-
-Figure 2 is a prototype of RShiny application.
+![](images/Prototype.jpg)Figure 2 is a prototype of RShiny application.
 
 # 5. Scope of Work
 
