@@ -27,6 +27,9 @@ website:
       - text: Temperature
       - text: Relative Humidity
       - text: Wind
+      
+      - text: Shiny App
+        href: https://chockwankee.shinyapps.io/Group11_VAP_ShinyApp/
 
 format:
   html:
