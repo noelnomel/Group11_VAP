@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -102,8 +136,14 @@ ul.task-list li input[type="checkbox"] {
     <a class="dropdown-item" href="../EDA/EDA_Noel.html" rel="" target="">
  <span class="dropdown-text">EDA_Noel</span></a>
   </li>  
-        <li class="dropdown-header">EDA_Vanessa</li>
-        <li class="dropdown-header">EDA_Wankee</li>
+        <li>
+    <a class="dropdown-item" href="../EDA/EDA_Vanessa.html" rel="" target="">
+ <span class="dropdown-text">EDA_Vanessa</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../EDA/EDA_Wankee.html" rel="" target="">
+ <span class="dropdown-text">EDA_Wankee</span></a>
+  </li>  
     </ul>
   </li>
   <li class="dropdown-header">
@@ -114,6 +154,10 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Relative Humidity</span></li>
   <li class="dropdown-header">
  <span class="menu-text">Wind</span></li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://chockwankee.shinyapps.io/Group11_VAP_ShinyApp/" rel="" target="">
+ <span class="menu-text">Shiny App</span></a>
+  </li>  
 </ul>
             <div class="quarto-navbar-tools ms-auto">
 </div>
@@ -148,6 +192,89 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, readr, psych)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>weather_list <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path =</span> <span class="st">"WeatherStation_Cleaned"</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">recursive =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.csv$"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(weather_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> chr [1:17] "WeatherStation_Cleaned/Admiralty.csv" ...</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(weather_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
+e.g.:
+  dat &lt;- vroom(...)
+  problems(dat)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 163904 Columns: 13
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (4): Station, Daily Rainfall Total, Highest 30 Min Rainfall, Highest 120...
+dbl (9): Year, Month, Day, Daily Rainfall Total (mm), Mean Temperature, Maxi...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 163,904
+Columns: 13
+$ Station                     &lt;chr&gt; "Admiralty", "Admiralty", "Admiralty", "Ad…
+$ Year                        &lt;dbl&gt; 2009, 2009, 2009, 2009, 2009, 2009, 2009, …
+$ Month                       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+$ Day                         &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,…
+$ `Daily Rainfall Total (mm)` &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `Daily Rainfall Total`      &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `Highest 30 Min Rainfall`   &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `Highest 120 Min Rainfall`  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `Mean Temperature`          &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `Maximum Temperature`       &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `Minimum Temperature`       &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `Mean Wind Speed (km/h)`    &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ `Max Wind Speed (km/h)`     &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                          vars      n    mean     sd median trimmed   mad
+Station*                     1 163904    9.98   4.64   11.0   10.16  5.93
+Year                         2 163904 2005.94  12.36 2009.0 2006.72 13.34
+Month                        3 163904    6.54   3.45    7.0    6.54  4.45
+Day                          4 163904   15.73   8.80   16.0   15.72 11.86
+Daily Rainfall Total (mm)    5 162453    6.85  14.89    0.2    3.13  0.30
+Daily Rainfall Total*        6  49288   87.94 145.87    4.0   54.75  2.97
+Highest 30 Min Rainfall*     7  49257  103.60 173.36    4.0   62.32  2.97
+Highest 120 Min Rainfall*    8  49260  115.58 188.14    4.0   71.86  2.97
+Mean Temperature             9 105250   27.68   1.22   27.7   27.70  1.33
+Maximum Temperature         10 124295   31.72   1.72   32.0   31.84  1.48
+Minimum Temperature         11 124248   24.78   1.43   24.6   24.72  1.48
+Mean Wind Speed (km/h)      12 123477    8.39   3.49    7.8    8.05  3.11
+Max Wind Speed (km/h)       13  88531   32.94   9.04   31.7   32.22  8.01
+                             min    max range  skew kurtosis   se
+Station*                     1.0   17.0  16.0 -0.26    -1.21 0.01
+Year                      1980.0 2023.0  43.0 -0.46    -1.03 0.03
+Month                        1.0   12.0  11.0 -0.01    -1.21 0.01
+Day                          1.0   31.0  30.0  0.01    -1.19 0.02
+Daily Rainfall Total (mm)    0.0  264.4 264.4  3.94    23.68 0.04
+Daily Rainfall Total*        1.0  464.0 463.0  1.57     0.99 0.66
+Highest 30 Min Rainfall*     1.0  596.0 595.0  1.70     1.63 0.78
+Highest 120 Min Rainfall*    1.0  660.0 659.0  1.65     1.53 0.85
+Mean Temperature            22.2   31.7   9.5 -0.20    -0.07 0.00
+Maximum Temperature         22.8   37.9  15.1 -0.80     1.15 0.00
+Minimum Temperature          0.0   34.7  34.7  0.24     1.99 0.00
+Mean Wind Speed (km/h)       0.2   31.3  31.1  1.08     1.62 0.01
+Max Wind Speed (km/h)        0.0  138.6 138.6  1.24     4.50 0.03</code></pre>
+</div>
+</div>
 
 
 

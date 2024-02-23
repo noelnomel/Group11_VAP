@@ -1,3 +1,24 @@
 ---
 title: "EDA_Wankee"
 ---
+
+```{r}
+pacman::p_load(tidyverse, readr, psych)
+```
+
+```{r}
+weather_list <- list.files(path = "WeatherStation_Cleaned",
+                               recursive = TRUE,
+                               pattern = "\\.csv$",
+                               full.names = TRUE)
+glimpse(weather_list)
+```
+
+```{r}
+weather <- read_csv(weather_list)
+glimpse(weather)
+```
+```{r}
+describe(weather)
+```
+
