@@ -3,11 +3,11 @@ title: "EDA_Wankee"
 ---
 
 ```{r}
-pacman::p_load(tidyverse, readr, psych)
+pacman::p_load(tidyverse, readr, psych, st, stars, tmap)
 ```
 
 ```{r}
-weather_list <- list.files(path = "WeatherStation_Cleaned",
+weather_list <- list.files(path = "data",
                            recursive = TRUE,
                            pattern = "\\.csv$",
                            full.names = TRUE)
@@ -25,7 +25,7 @@ describe(weather)
 ## Save rds
 
 ```{r}
-write_rds(weather, "WeatherStation_Cleaned/weather.rds")
+write_rds(weather, "data/weather.rds")
 ```
 :::
 
@@ -34,8 +34,70 @@ write_rds(weather, "WeatherStation_Cleaned/weather.rds")
 ## Load rds
 
 ```{r}
-weather <- readRDS("WeatherStation_Cleaned/weather.rds")
+weather <- readRDS("data/weather.rds")
 ```
 :::
 
+```{r}
+mpsz <- st_read(dsn = "data/geospatial", layer = "MPSZ-2019") %>% 
+  st_transform(crs=3414)
+```
+```{r}
+tmap_mode("plot")
+
+tm_shape(mpsz) +
+  tm_polygons(col = "REGION_N", palette = "Set2")+
+  tm_layout(main.title = "Planning Area",
+            main.title.position = "left",
+            main.title.size = 1,
+            legend.show = FALSE,
+            frame = FALSE)
+```
+
+
+
+```{r}
+tmap_mode("plot")
+
+tm_shape(mpsz) +
+  tm_polygons(col = "PLN_AREA_N", palette = "Set2")+
+  tm_layout(main.title = "Planning Area",
+            main.title.position = "left",
+            main.title.size = 1,
+            legend.show = FALSE,
+            frame = FALSE)
+```
+```{r}
+unique(mpsz$PLN_AREA_N)
+```
+
+```{r}
+unique(weather$Station)
+```
+```{r}
+station_to_subzone <- c(
+  "Admiralty" = "WOODLANDS",
+  "Ang Mo Kio" = "ANG MO KIO",
+  "Boon Lay (East)" = "BOON LAY",
+  "Changi" = "CHANGI",
+  "Choa Chu Kang (South)" = "CHOA CHU KANG",
+  "Clementi" = "CLEMENTI",
+  "East Coast Parkway" = "BEDOK",
+  "Jurong (West)" = "JURONG WEST",
+  "Khatib" = "YISHUN",
+  "Marina Barrage" = "MARINA SOUTH",
+  "Newton" = "NEWTON",
+  "Pasir Panjang" = "PASIR PANJANG",
+  "Paya Lebar" = "PAYA LEBAR",
+  "Seletar" = "SELETAR",
+  "Sembawang" = "SEMBAWANG",
+  "Tai Seng" = "HOUGANG",
+  "Tengah" = "TENGAH",
+  "Tuas South" = "TUAS"
+)
+
+weather$Subzone <- station_to_subzone[weather$Station]
+weather <- weather[, c("Subzone", setdiff(names(weather), "Subzone"))]
+head(weather)
+```
 

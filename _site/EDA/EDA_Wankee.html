@@ -193,86 +193,262 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, readr, psych)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, readr, psych, st, stars, tmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>weather_list <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path =</span> <span class="st">"WeatherStation_Cleaned"</span>,</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                               <span class="at">recursive =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                               <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.csv$"</span>,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                               <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(weather_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>weather_list <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path =</span> <span class="st">"data"</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">recursive =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.csv$"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                           <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(weather_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> chr [1:17] "WeatherStation_Cleaned/Admiralty.csv" ...</code></pre>
+<pre><code>[[1]]
+ [1] "data/Admiralty.csv"             "data/Ang Mo Kio.csv"           
+ [3] "data/Boon Lay (East).csv"       "data/Changi.csv"               
+ [5] "data/Choa Chu Kang (South).csv" "data/Clementi.csv"             
+ [7] "data/East Coast Parkway.csv"    "data/Jurong (West).csv"        
+ [9] "data/Khatib.csv"                "data/Marina Barrage.csv"       
+[11] "data/Newton.csv"                "data/Pasir Panjang.csv"        
+[13] "data/Paya Lebar.csv"            "data/Seletar.csv"              
+[15] "data/Sembawang.csv"             "data/Tai Seng.csv"             
+[17] "data/Tengah.csv"                "data/Tuas South.csv"           </code></pre>
 </div>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(weather_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
-e.g.:
-  dat &lt;- vroom(...)
-  problems(dat)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 163904 Columns: 13
+<pre><code>Rows: 168836 Columns: 13
 ── Column specification ────────────────────────────────────────────────────────
 Delimiter: ","
-chr (4): Station, Daily Rainfall Total, Highest 30 Min Rainfall, Highest 120...
-dbl (9): Year, Month, Day, Daily Rainfall Total (mm), Mean Temperature, Maxi...
+chr (10): Station, Daily Rainfall Total, Highest 30 Min Rainfall, Highest 60...
+dbl  (3): Year, Month, Day
 
 ℹ Use `spec()` to retrieve the full column specification for this data.
 ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 163,904
+<pre><code>Rows: 168,836
 Columns: 13
-$ Station                     &lt;chr&gt; "Admiralty", "Admiralty", "Admiralty", "Ad…
-$ Year                        &lt;dbl&gt; 2009, 2009, 2009, 2009, 2009, 2009, 2009, …
-$ Month                       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
-$ Day                         &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,…
-$ `Daily Rainfall Total (mm)` &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-$ `Daily Rainfall Total`      &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-$ `Highest 30 Min Rainfall`   &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-$ `Highest 120 Min Rainfall`  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-$ `Mean Temperature`          &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-$ `Maximum Temperature`       &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-$ `Minimum Temperature`       &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-$ `Mean Wind Speed (km/h)`    &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
-$ `Max Wind Speed (km/h)`     &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</code></pre>
+$ Station                    &lt;chr&gt; "Admiralty", "Admiralty", "Admiralty", "Adm…
+$ Year                       &lt;dbl&gt; 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2…
+$ Month                      &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+$ Day                        &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, …
+$ `Daily Rainfall Total`     &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ `Highest 30 Min Rainfall`  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ `Highest 60 Min Rainfall`  &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ `Highest 120 Min Rainfall` &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ `Mean Temperature`         &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ `Maximum Temperature`      &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ `Minimum Temperature`      &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ `Mean Wind Speed`          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ `Max Wind Speed`           &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">describe</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                          vars      n    mean     sd median trimmed   mad
-Station*                     1 163904    9.98   4.64   11.0   10.16  5.93
-Year                         2 163904 2005.94  12.36 2009.0 2006.72 13.34
-Month                        3 163904    6.54   3.45    7.0    6.54  4.45
-Day                          4 163904   15.73   8.80   16.0   15.72 11.86
-Daily Rainfall Total (mm)    5 162453    6.85  14.89    0.2    3.13  0.30
-Daily Rainfall Total*        6  49288   87.94 145.87    4.0   54.75  2.97
-Highest 30 Min Rainfall*     7  49257  103.60 173.36    4.0   62.32  2.97
-Highest 120 Min Rainfall*    8  49260  115.58 188.14    4.0   71.86  2.97
-Mean Temperature             9 105250   27.68   1.22   27.7   27.70  1.33
-Maximum Temperature         10 124295   31.72   1.72   32.0   31.84  1.48
-Minimum Temperature         11 124248   24.78   1.43   24.6   24.72  1.48
-Mean Wind Speed (km/h)      12 123477    8.39   3.49    7.8    8.05  3.11
-Max Wind Speed (km/h)       13  88531   32.94   9.04   31.7   32.22  8.01
-                             min    max range  skew kurtosis   se
-Station*                     1.0   17.0  16.0 -0.26    -1.21 0.01
-Year                      1980.0 2023.0  43.0 -0.46    -1.03 0.03
-Month                        1.0   12.0  11.0 -0.01    -1.21 0.01
-Day                          1.0   31.0  30.0  0.01    -1.19 0.02
-Daily Rainfall Total (mm)    0.0  264.4 264.4  3.94    23.68 0.04
-Daily Rainfall Total*        1.0  464.0 463.0  1.57     0.99 0.66
-Highest 30 Min Rainfall*     1.0  596.0 595.0  1.70     1.63 0.78
-Highest 120 Min Rainfall*    1.0  660.0 659.0  1.65     1.53 0.85
-Mean Temperature            22.2   31.7   9.5 -0.20    -0.07 0.00
-Maximum Temperature         22.8   37.9  15.1 -0.80     1.15 0.00
-Minimum Temperature          0.0   34.7  34.7  0.24     1.99 0.00
-Mean Wind Speed (km/h)       0.2   31.3  31.1  1.08     1.62 0.01
-Max Wind Speed (km/h)        0.0  138.6 138.6  1.24     4.50 0.03</code></pre>
+<pre><code>                          vars      n    mean     sd median trimmed   mad  min
+Station*                     1 168836   10.51   5.02     12   10.69  5.93    1
+Year                         2 168836 2006.25  12.34   2010 2007.10 13.34 1980
+Month                        3 168836    6.54   3.45      7    6.55  4.45    1
+Day                          4 168836   15.73   8.80     16   15.72 11.86    1
+Daily Rainfall Total*        5 167188  210.70 322.45      4  145.27  2.97    1
+Highest 30 Min Rainfall*     6  51716   70.59 123.67      3   40.26  1.48    1
+Highest 60 Min Rainfall*     7  51683   80.76 140.96      3   46.24  1.48    1
+Highest 120 Min Rainfall*    8  51686   91.24 153.54      3   54.96  1.48    1
+Mean Temperature*            9 109321   56.07  12.31     56   56.29 13.34    1
+Maximum Temperature*        10 128383   89.37  17.25     92   90.62 14.83    1
+Minimum Temperature*        11 128336   54.13  14.39     53   53.54 14.83    1
+Mean Wind Speed*            12 128355  186.14  87.96    229  196.52 34.10    1
+Max Wind Speed*             13  93405  208.43  75.11    202  206.25 75.61    1
+                           max range  skew kurtosis   se
+Station*                    18    17 -0.24    -1.27 0.01
+Year                      2023    43 -0.50    -0.99 0.03
+Month                       12    11 -0.01    -1.21 0.01
+Day                         31    30  0.01    -1.19 0.02
+Daily Rainfall Total*     1283  1282  1.37     0.72 0.79
+Highest 30 Min Rainfall*   435   434  1.77     1.81 0.54
+Highest 60 Min Rainfall*   555   554  1.88     2.49 0.62
+Highest 120 Min Rainfall*  622   621  1.78     2.15 0.68
+Mean Temperature*           96    95 -0.22     0.03 0.04
+Maximum Temperature*       143   142 -0.83     1.29 0.05
+Minimum Temperature*       105   104  0.34    -0.18 0.04
+Mean Wind Speed*           271   270 -0.98    -0.80 0.25
+Max Wind Speed*            524   523  0.31     0.09 0.25</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Save rds
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(weather, <span class="st">"data/weather.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Load rds
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/weather.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>mpsz <span class="ot">&lt;-</span> <span class="fu">st_read</span>(<span class="at">dsn =</span> <span class="st">"data/geospatial"</span>, <span class="at">layer =</span> <span class="st">"MPSZ-2019"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_transform</span>(<span class="at">crs=</span><span class="dv">3414</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Reading layer `MPSZ-2019' from data source 
+  `/Users/chockwankee/Documents/chockwk/Group11_VAP/EDA/data/geospatial' 
+  using driver `ESRI Shapefile'
+Simple feature collection with 332 features and 6 fields
+Geometry type: MULTIPOLYGON
+Dimension:     XY
+Bounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775
+Geodetic CRS:  WGS 84</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>tmap mode set to plotting</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">col =</span> <span class="st">"REGION_N"</span>, <span class="at">palette =</span> <span class="st">"Set2"</span>)<span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Planning Area"</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.position =</span> <span class="st">"left"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.size =</span> <span class="dv">1</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.show =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">frame =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="EDA_Wankee_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>tmap mode set to plotting</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz) <span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_polygons</span>(<span class="at">col =</span> <span class="st">"PLN_AREA_N"</span>, <span class="at">palette =</span> <span class="st">"Set2"</span>)<span class="sc">+</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Planning Area"</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.position =</span> <span class="st">"left"</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.size =</span> <span class="dv">1</span>,</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.show =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">frame =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Number of levels of the variable "PLN_AREA_N" is 55, which is larger
+than max.categories (which is 30), so levels are combined. Set
+tmap_options(max.categories = 55) in the layer function to show all levels.</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="EDA_Wankee_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(mpsz<span class="sc">$</span>PLN_AREA_N)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "MARINA EAST"             "RIVER VALLEY"           
+ [3] "SINGAPORE RIVER"         "WESTERN ISLANDS"        
+ [5] "MUSEUM"                  "MARINE PARADE"          
+ [7] "SOUTHERN ISLANDS"        "BUKIT MERAH"            
+ [9] "DOWNTOWN CORE"           "STRAITS VIEW"           
+[11] "QUEENSTOWN"              "OUTRAM"                 
+[13] "MARINA SOUTH"            "ROCHOR"                 
+[15] "KALLANG"                 "TANGLIN"                
+[17] "NEWTON"                  "CLEMENTI"               
+[19] "BEDOK"                   "PIONEER"                
+[21] "JURONG EAST"             "ORCHARD"                
+[23] "GEYLANG"                 "BOON LAY"               
+[25] "BUKIT TIMAH"             "NOVENA"                 
+[27] "TOA PAYOH"               "TUAS"                   
+[29] "JURONG WEST"             "SERANGOON"              
+[31] "BISHAN"                  "TAMPINES"               
+[33] "BUKIT BATOK"             "HOUGANG"                
+[35] "CHANGI BAY"              "PAYA LEBAR"             
+[37] "ANG MO KIO"              "PASIR RIS"              
+[39] "BUKIT PANJANG"           "TENGAH"                 
+[41] "SELETAR"                 "SUNGEI KADUT"           
+[43] "YISHUN"                  "MANDAI"                 
+[45] "PUNGGOL"                 "CHOA CHU KANG"          
+[47] "SENGKANG"                "CHANGI"                 
+[49] "CENTRAL WATER CATCHMENT" "SEMBAWANG"              
+[51] "WESTERN WATER CATCHMENT" "WOODLANDS"              
+[53] "NORTH-EASTERN ISLANDS"   "SIMPANG"                
+[55] "LIM CHU KANG"           </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(weather<span class="sc">$</span>Station)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Admiralty"             "Ang Mo Kio"            "Boon Lay (East)"      
+ [4] "Changi"                "Choa Chu Kang (South)" "Clementi"             
+ [7] "East Coast Parkway"    "Jurong (West)"         "Khatib"               
+[10] "Marina Barrage"        "Newton"                "Pasir Panjang"        
+[13] "Paya Lebar"            "Seletar"               "Sembawang"            
+[16] "Tai Seng"              "Tengah"                "Tuas South"           </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>station_to_subzone <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Admiralty"</span> <span class="ot">=</span> <span class="st">"WOODLANDS"</span>,</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Ang Mo Kio"</span> <span class="ot">=</span> <span class="st">"ANG MO KIO"</span>,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Boon Lay (East)"</span> <span class="ot">=</span> <span class="st">"BOON LAY"</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Changi"</span> <span class="ot">=</span> <span class="st">"CHANGI"</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Choa Chu Kang (South)"</span> <span class="ot">=</span> <span class="st">"CHOA CHU KANG"</span>,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Clementi"</span> <span class="ot">=</span> <span class="st">"CLEMENTI"</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="st">"East Coast Parkway"</span> <span class="ot">=</span> <span class="st">"BEDOK"</span>,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Jurong (West)"</span> <span class="ot">=</span> <span class="st">"JURONG WEST"</span>,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Khatib"</span> <span class="ot">=</span> <span class="st">"YISHUN"</span>,</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Marina Barrage"</span> <span class="ot">=</span> <span class="st">"MARINA SOUTH"</span>,</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Newton"</span> <span class="ot">=</span> <span class="st">"NEWTON"</span>,</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Pasir Panjang"</span> <span class="ot">=</span> <span class="st">"PASIR PANJANG"</span>,</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Paya Lebar"</span> <span class="ot">=</span> <span class="st">"PAYA LEBAR"</span>,</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Seletar"</span> <span class="ot">=</span> <span class="st">"SELETAR"</span>,</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Sembawang"</span> <span class="ot">=</span> <span class="st">"SEMBAWANG"</span>,</span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Tai Seng"</span> <span class="ot">=</span> <span class="st">"HOUGANG"</span>,</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Tengah"</span> <span class="ot">=</span> <span class="st">"TENGAH"</span>,</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  <span class="st">"Tuas South"</span> <span class="ot">=</span> <span class="st">"TUAS"</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>weather<span class="sc">$</span>Subzone <span class="ot">&lt;-</span> station_to_subzone[weather<span class="sc">$</span>Station]</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> weather[, <span class="fu">c</span>(<span class="st">"Subzone"</span>, <span class="fu">setdiff</span>(<span class="fu">names</span>(weather), <span class="st">"Subzone"</span>))]</span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 14
+  Subzone   Station    Year Month   Day `Daily Rainfall Total`
+  &lt;chr&gt;     &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;                 
+1 WOODLANDS Admiralty  2009     1     1 &lt;NA&gt;                  
+2 WOODLANDS Admiralty  2009     1     2 &lt;NA&gt;                  
+3 WOODLANDS Admiralty  2009     1     3 &lt;NA&gt;                  
+4 WOODLANDS Admiralty  2009     1     4 &lt;NA&gt;                  
+5 WOODLANDS Admiralty  2009     1     5 &lt;NA&gt;                  
+6 WOODLANDS Admiralty  2009     1     6 &lt;NA&gt;                  
+# ℹ 8 more variables: `Highest 30 Min Rainfall` &lt;chr&gt;,
+#   `Highest 60 Min Rainfall` &lt;chr&gt;, `Highest 120 Min Rainfall` &lt;chr&gt;,
+#   `Mean Temperature` &lt;chr&gt;, `Maximum Temperature` &lt;chr&gt;,
+#   `Minimum Temperature` &lt;chr&gt;, `Mean Wind Speed` &lt;chr&gt;,
+#   `Max Wind Speed` &lt;chr&gt;</code></pre>
 </div>
 </div>
 
