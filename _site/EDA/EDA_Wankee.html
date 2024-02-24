@@ -170,7 +170,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#import-packages" id="toc-import-packages" class="nav-link active" data-scroll-target="#import-packages">1. Import Packages</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -192,6 +198,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
+<section id="import-packages" class="level1">
+<h1>1. Import Packages</h1>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, readr, psych, st, stars, tmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -203,15 +211,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(weather_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
- [1] "data/Admiralty.csv"             "data/Ang Mo Kio.csv"           
- [3] "data/Boon Lay (East).csv"       "data/Changi.csv"               
- [5] "data/Choa Chu Kang (South).csv" "data/Clementi.csv"             
- [7] "data/East Coast Parkway.csv"    "data/Jurong (West).csv"        
- [9] "data/Khatib.csv"                "data/Marina Barrage.csv"       
-[11] "data/Newton.csv"                "data/Pasir Panjang.csv"        
-[13] "data/Paya Lebar.csv"            "data/Seletar.csv"              
-[15] "data/Sembawang.csv"             "data/Tai Seng.csv"             
-[17] "data/Tengah.csv"                "data/Tuas South.csv"           </code></pre>
+ [1] "data/aspatial/Admiralty.csv"            
+ [2] "data/aspatial/Ang Mo Kio.csv"           
+ [3] "data/aspatial/Boon Lay (East).csv"      
+ [4] "data/aspatial/Changi.csv"               
+ [5] "data/aspatial/Choa Chu Kang (South).csv"
+ [6] "data/aspatial/Clementi.csv"             
+ [7] "data/aspatial/East Coast Parkway.csv"   
+ [8] "data/aspatial/Jurong (West).csv"        
+ [9] "data/aspatial/Khatib.csv"               
+[10] "data/aspatial/Marina Barrage.csv"       
+[11] "data/aspatial/Newton.csv"               
+[12] "data/aspatial/Pasir Panjang.csv"        
+[13] "data/aspatial/Paya Lebar.csv"           
+[14] "data/aspatial/Seletar.csv"              
+[15] "data/aspatial/Sembawang.csv"            
+[16] "data/aspatial/Tai Seng.csv"             
+[17] "data/aspatial/Tengah.csv"               
+[18] "data/aspatial/Tuas South.csv"           </code></pre>
 </div>
 </div>
 <div class="cell">
@@ -453,6 +470,7 @@ tmap_options(max.categories = 55) in the layer function to show all levels.</cod
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

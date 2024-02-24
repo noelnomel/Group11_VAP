@@ -2,6 +2,8 @@
 title: "EDA_Wankee"
 ---
 
+# 1. Import Packages
+
 ```{r}
 pacman::p_load(tidyverse, readr, psych, st, stars, tmap)
 ```
