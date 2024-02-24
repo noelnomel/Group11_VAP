@@ -2,3 +2,22 @@
 title: "EDA_Noel"
 author: "Noel"
 ---
+
+```{r}
+pacman::p_load(tidyverse, ggidist, ggridges)
+
+```
+```{r}
+data <- list.files(path="WeatherStation_Cleaned", pattern="*.csv", full.names=TRUE)
+data
+
+weather <- read_csv(data)
+```
+
+
+
+
+
+
+
+
