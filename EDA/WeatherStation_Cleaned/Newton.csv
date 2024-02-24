@@ -1,4 +1,4 @@
-﻿Station,Year,Month,Day,Daily Rainfall Total (mm),Daily Rainfall Total,Highest 30 Min Rainfall,Highest 120 Min Rainfall,Mean Temperature,Maximum Temperature,Minimum Temperature,Mean Wind Speed (km/h),Max Wind Speed (km/h)
+﻿Station,Year,Month,Day,Daily Rainfall Total,Highest 30 Min Rainfall,Highest 60 Min Rainfall,Highest 120 Min Rainfall,Mean Temperature,Maximum Temperature,Minimum Temperature,Mean Wind Speed,Max Wind Speed
 Newton,2009,10,1,,,,,,,,,
 Newton,2009,10,2,,,,,,,,,
 Newton,2009,10,3,,,,,,,,,

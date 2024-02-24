@@ -1,4 +1,4 @@
-﻿Station,Year,Month,Day,Daily Rainfall Total (mm),Daily Rainfall Total,Highest 30 Min Rainfall,Highest 120 Min Rainfall,Mean Temperature,Maximum Temperature,Minimum Temperature,Mean Wind Speed (km/h),Max Wind Speed (km/h)
+﻿Station,Year,Month,Day,Daily Rainfall Total,Highest 30 Min Rainfall,Highest 60 Min Rainfall,Highest 120 Min Rainfall,Mean Temperature,Maximum Temperature,Minimum Temperature,Mean Wind Speed,Max Wind Speed
 Tuas South,2011,4,1,12,,,,28.4,31.9,25.9,8.5,22
 Tuas South,2011,4,2,0,,,,,30.4,23,7.1,42.8
 Tuas South,2011,4,3,0,,,,,,,10.2,25.6
