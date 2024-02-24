@@ -9,7 +9,7 @@ pacman::p_load(tidyverse, ggdist, ggridges, heatmaply, ggiraph)
 ```
 
 ```{r}
-data <- list.files(path="WeatherStation_Cleaned", pattern="*.csv", full.names=TRUE)
+data <- list.files(path="data/aspatial", pattern="*.csv", full.names=TRUE)
 data
 
 weather <- read_csv(data)
