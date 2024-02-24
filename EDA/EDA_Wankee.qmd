@@ -8,10 +8,10 @@ pacman::p_load(tidyverse, readr, psych)
 
 ```{r}
 weather_list <- list.files(path = "WeatherStation_Cleaned",
-                               recursive = TRUE,
-                               pattern = "\\.csv$",
-                               full.names = TRUE)
-glimpse(weather_list)
+                           recursive = TRUE,
+                           pattern = "\\.csv$",
+                           full.names = TRUE)
+list(weather_list)
 ```
 
 ```{r}
@@ -21,4 +21,21 @@ glimpse(weather)
 ```{r}
 describe(weather)
 ```
+::: {.callout-note collapse="true"}
+## Save rds
+
+```{r}
+write_rds(weather, "WeatherStation_Cleaned/weather.rds")
+```
+:::
+
+
+::: {.callout-note collapse="true"}
+## Load rds
+
+```{r}
+weather <- readRDS("WeatherStation_Cleaned/weather.rds")
+```
+:::
+
 
