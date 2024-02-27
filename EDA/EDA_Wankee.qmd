@@ -1,11 +1,21 @@
 ---
 title: "EDA_Wankee"
+author: "Wan Kee"
+date: "17 February 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  freeze: true
+  warning: false
+  message: false
+  error: true
 ---
 
 # 1. Import Packages
 
 ```{r}
-pacman::p_load(tidyverse, readr, psych, st, stars, tmap)
+pacman::p_load(tidyverse, readr, psych, st, stars, tmap, neaSG)
 ```
 
 ```{r}
@@ -45,7 +55,12 @@ mpsz <- st_read(dsn = "data/geospatial", layer = "MPSZ-2019") %>%
   st_transform(crs=3414)
 ```
 ```{r}
-tmap_mode("plot")
+glimpse(mpsz)
+```
+
+
+```{r}
+tmap_mode("view")
 
 tm_shape(mpsz) +
   tm_polygons(col = "REGION_N", palette = "Set2")+
@@ -53,21 +68,23 @@ tm_shape(mpsz) +
             main.title.position = "left",
             main.title.size = 1,
             legend.show = FALSE,
-            frame = FALSE)
+            frame = FALSE) +
+  tmap_options(check.and.fix = TRUE) +
+  tm_view(set.zoom.limits = c(11,12))
 ```
 
 
-
 ```{r}
-tmap_mode("plot")
+tmap_mode("view")
 
 tm_shape(mpsz) +
-  tm_polygons(col = "PLN_AREA_N", palette = "Set2")+
+  tm_polygons(col = "PLN_AREA_C", palette = "Set2")+
   tm_layout(main.title = "Planning Area",
             main.title.position = "left",
             main.title.size = 1,
             legend.show = FALSE,
-            frame = FALSE)
+            frame = FALSE) +
+  tm_view(set.zoom.limits = c(11,12))
 ```
 ```{r}
 unique(mpsz$PLN_AREA_N)
@@ -103,3 +120,12 @@ weather <- weather[, c("Subzone", setdiff(names(weather), "Subzone"))]
 head(weather)
 ```
 
+```{r}
+stn <- get_weatherstns()
+glimpse(stn)
+```
+```{r}
+unique(stn$name)
+```
+
+# ggbetweenstats: year, temp_diff, stat, type, mean.ci, pairwise comparison; allow the various parameter to be available on shiny app.
