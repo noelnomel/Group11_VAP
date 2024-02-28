@@ -28,6 +28,10 @@ list(weather_list)
 
 ```{r}
 weather <- read_csv(weather_list)
+
+weather <- weather %>%
+  rename_with(~ gsub(" ", "_", .x), everything())
+
 glimpse(weather)
 ```
 ```{r}
@@ -86,6 +90,21 @@ tm_shape(mpsz) +
             frame = FALSE) +
   tm_view(set.zoom.limits = c(11,12))
 ```
+
+```{r}
+tmap_mode("view")
+
+tm_shape(mpsz) +
+  tm_polygons(col = "SUBZONE_N", palette = "Set2")+
+  tm_layout(main.title = "Planning Area",
+            main.title.position = "left",
+            main.title.size = 1,
+            legend.show = FALSE,
+            frame = FALSE) +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+
 ```{r}
 unique(mpsz$PLN_AREA_N)
 ```
@@ -120,12 +139,73 @@ weather <- weather[, c("Subzone", setdiff(names(weather), "Subzone"))]
 head(weather)
 ```
 
+
 ```{r}
-stn <- get_weatherstns()
-glimpse(stn)
-```
-```{r}
-unique(stn$name)
+weather <- weather %>%
+  mutate_at(vars(Daily_Rainfall_Total,
+                 Highest_30_Min_Rainfall,
+                 Highest_60_Min_Rainfall,
+                 Highest_120_Min_Rainfall,
+                 Mean_Temperature,
+                 Maximum_Temperature),
+            as.numeric)
 ```
 
-# ggbetweenstats: year, temp_diff, stat, type, mean.ci, pairwise comparison; allow the various parameter to be available on shiny app.
+
+```{r}
+weather_map <- weather %>% 
+  group_by(Subzone, Station, Year) %>% 
+  summarise(Annual_Rainfall_Total = sum(Daily_Rainfall_Total, na.rm = TRUE),
+            Annual_Highest_30_Min_Rainfall = sum(Highest_30_Min_Rainfall, na.rm = TRUE),
+            Annual_Highest_60_Min_Rainfall = sum(Highest_60_Min_Rainfall, na.rm = TRUE),
+            Annual_Highest_120_Min_Rainfall = sum(Highest_120_Min_Rainfall, na.rm = TRUE),
+            Annual_Mean_Temperature = sum(Mean_Temperature, na.rm = TRUE),
+            Annual_Maximum_Temperature = sum(Maximum_Temperature, na.rm = TRUE),
+            Annual_Minimum_Temperature = sum(Minimum_Temperature, na.rm = TRUE)) %>%
+  ungroup()
+
+glimpse(weather_map)
+```
+
+
+
+```{r}
+mpszweather <- left_join(mpsz, weather_map,
+                         by = c("PLN_AREA_N" = "Subzone"))
+glimpse(mpszweather)
+```
+```{r}
+tm_shape(mpszweather) +
+  tm_polygons(col = "Annual_Rainfall_Total", 
+              palette = "Blues", 
+              style = "jenks")
+```
+
+```{r}
+tm_shape(mpszweather) +
+  tm_polygons(col = "Annual_Highest_30_Min_Rainfall", 
+              palette = "Blues", 
+              style = "jenks")
+```
+
+```{r}
+tm_shape(mpszweather) +
+  tm_polygons(col = "Annual_Mean_Temperature", 
+              palette = "Oranges", 
+              style = "jenks")
+```
+
+```{r}
+tm_shape(mpszweather) +
+  tm_polygons(col = "Annual_Maximum_Temperature", 
+              palette = "Oranges", 
+              style = "jenks")
+```
+
+```{r}
+tm_shape(mpszweather) +
+  tm_polygons(col = "Annual_Minimum_Temperature", 
+              palette = "Oranges", 
+              style = "jenks")
+```
+
