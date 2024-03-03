@@ -1,0 +1,24 @@
+---
+title: "Data Preparation"
+---
+
+```{r}
+pacman::p_load(tidyverse, readr, psych, st, stars, tmap)
+```
+
+```{r}
+weather_list <- list.files(path = "data",
+                           recursive = TRUE,
+                           pattern = "\\.csv$",
+                           full.names = TRUE)
+list(weather_list)
+```
+
+```{r}
+weather <- read_csv(weather_list)
+
+weather <- weather %>%
+  rename_with(~ gsub(" ", "_", .x), everything())
+
+glimpse(weather)
+```
