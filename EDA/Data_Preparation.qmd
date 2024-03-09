@@ -2,23 +2,196 @@
 title: "Data Preparation"
 ---
 
+# 1. Load Packages
+
 ```{r}
-pacman::p_load(tidyverse, readr, psych, st, stars, tmap)
+pacman::p_load(tidyverse, readr, psych, st, stars, tmap, lubridate, visdat, ggiraph, reshape, ggthemes, plotly)
+```
+
+# 2. Import Data
+
+```{r}
+data_list <- list.files(path = "data/aspatial",
+                        recursive = TRUE,
+                        pattern = "\\.csv$",
+                        full.names = TRUE)
+list(data_list)
 ```
 
 ```{r}
-weather_list <- list.files(path = "data",
-                           recursive = TRUE,
-                           pattern = "\\.csv$",
-                           full.names = TRUE)
-list(weather_list)
-```
-
-```{r}
-weather <- read_csv(weather_list)
-
+weather <- read_csv(data_list)
 weather <- weather %>%
   rename_with(~ gsub(" ", "_", .x), everything())
-
 glimpse(weather)
 ```
+
+# 3. Prepare Data
+
+```{r}
+weather <- weather %>% 
+  mutate(Station = as.factor(Station),
+         Date = make_date(year = Year, month = Month, day = Day),
+         Month = month(Date, label = TRUE),         
+         Day = day(Date),
+         Daily_Rainfall_Total = as.numeric(Daily_Rainfall_Total),
+         Highest_30_Min_Rainfall = as.numeric(Highest_30_Min_Rainfall),
+         Highest_60_Min_Rainfall = as.numeric(Highest_60_Min_Rainfall),
+         Highest_120_Min_Rainfall = as.numeric(Highest_120_Min_Rainfall),
+         Mean_Temperature = as.numeric(Mean_Temperature), 
+         Maximum_Temperature = as.numeric(Maximum_Temperature), 
+         Minimum_Temperature = as.numeric(Minimum_Temperature),
+         Mean_Wind_Speed = as.numeric(Mean_Wind_Speed),
+         Max_Wind_Speed = as.numeric(Max_Wind_Speed))
+glimpse(weather)
+```
+
+```{r}
+weather %>%
+  sample_n(10000) %>%
+  vis_miss()
+```
+
+```{r}
+write_rds(weather, "data/weather.rds")
+```
+
+# 4. Create Rainfall Dataset
+
+```{r}
+rainfall <- weather %>%
+  select(Station, Date, Year, Month, Day, Daily_Rainfall_Total, Highest_30_Min_Rainfall, Highest_60_Min_Rainfall, Highest_120_Min_Rainfall)
+glimpse(rainfall)
+```
+
+```{r}
+write_rds(rainfall, "data/rainfall.rds")
+```
+
+```{r}
+rainfall %>%
+  sample_n(10000) %>%
+  vis_miss()
+```
+
+# 5. Create Temperature Dataset
+
+```{r}
+temp <- weather %>%
+  select(Station, Date, Year, Month, Day, Mean_Temperature, Maximum_Temperature, Minimum_Temperature)
+glimpse(temp)
+```
+
+```{r}
+write_rds(temp, "data/temp.rds")
+```
+
+```{r}
+temp %>%
+  sample_n(10000) %>%
+  vis_miss()
+```
+
+# 6. Create Wind Dataset
+
+```{r}
+wind <- weather %>%
+  select(Station, Year, Date, Month, Day, Mean_Wind_Speed, Max_Wind_Speed)
+glimpse(wind)
+```
+
+```{r}
+write_rds(wind, "data/wind.rds")
+```
+
+```{r}
+wind %>%
+  sample_n(10000) %>%
+  vis_miss()
+```
+
+# 7. Import Temp and Rainfall rds
+
+```{r}
+rainfall <- readRDS("data/rainfall.rds")
+temp <- readRDS("data/temp.rds")
+```
+
+# 8. Prepare Data
+
+# 8.1 Temperature
+
+```{r}
+temp <- temp %>% 
+  filter(!if_all(c(Mean_Temperature), is.na))
+#  filter(!if_all(c(Mean_Temperature, Maximum_Temperature, Minimum_Temperature), is.na))
+glimpse(temp)
+```
+
+
+
+```{r}
+temp_year <- temp %>%
+  drop_na() %>%
+  group_by(Station, Year) %>%
+  summarise(Avg_Mean = round(mean(Mean_Temperature), 1),
+            Avg_Max = round(mean(Maximum_Temperature), 1),
+            Avg_Min = round(mean(Minimum_Temperature), 1))
+
+glimpse(temp_year)
+
+temp_month <- temp %>%
+  drop_na() %>%
+  group_by(Station, Year, Month) %>%
+  summarise(Avg_Mean = round(mean(Mean_Temperature), 1),
+            Avg_Max = round(mean(Maximum_Temperature), 1),
+            Avg_Min = round(mean(Minimum_Temperature), 1))
+
+glimpse(temp_month)
+```
+
+Prepare temperature for time series analysis:
+
+```{r}
+temp_month_melted <- melt(temp_month, id.vars = c("Year", "Month"), measure.vars = "Avg_Mean")
+temp_month_melted$Month <- as.factor(temp_month_melted$Month)
+
+temp_month_melted <- temp_month_melted %>%
+  rename(Avg_Mean_Temp = value)
+
+glimpse(temp_month_melted)
+```
+
+Prepare temperature for geospatial analysis:
+
+```{r}
+temp_map <- temp %>% 
+  group_by(Station, Year) %>% 
+  summarise(Annual_Mean_Temperature = sum(Mean_Temperature, na.rm = TRUE),
+            Annual_Maximum_Temperature = sum(Maximum_Temperature, na.rm = TRUE),
+            Annual_Minimum_Temperature = sum(Minimum_Temperature, na.rm = TRUE)) %>%
+  ungroup()
+glimpse(temp_map)
+```
+
+# 8.2 Rainfall
+
+```{r}
+rainfall <- rainfall %>% 
+  filter(!if_all(c(Daily_Rainfall_Total), is.na))
+#  filter(!if_all(c(Mean_Temperature, Maximum_Temperature, Minimum_Temperature), is.na))
+glimpse(rainfall)
+```
+
+Prepare rainfall for geospatial analysis:
+
+```{r}
+rainfall_map <- rainfall %>% 
+  group_by(Station, Year) %>% 
+  summarise(Annual_Rainfall_Total = sum(Daily_Rainfall_Total, na.rm = TRUE),
+            Annual_Highest_30_Min_Rainfall = sum(Highest_30_Min_Rainfall, na.rm = TRUE),
+            Annual_Highest_60_Min_Rainfall = sum(Highest_60_Min_Rainfall, na.rm = TRUE),
+            Annual_Highest_120_Min_Rainfall = sum(Highest_120_Min_Rainfall, na.rm = TRUE)) %>%
+  ungroup()
+glimpse(rainfall_map)
+```
+

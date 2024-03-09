@@ -174,7 +174,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#load-packages" id="toc-load-packages" class="nav-link active" data-scroll-target="#load-packages">1. Load Packages</a></li>
+  <li><a href="#import-data" id="toc-import-data" class="nav-link" data-scroll-target="#import-data">2. Import Data</a></li>
+  <li><a href="#prepare-data" id="toc-prepare-data" class="nav-link" data-scroll-target="#prepare-data">3. Prepare Data</a></li>
+  <li><a href="#create-rainfall-dataset" id="toc-create-rainfall-dataset" class="nav-link" data-scroll-target="#create-rainfall-dataset">4. Create Rainfall Dataset</a></li>
+  <li><a href="#create-temperature-dataset" id="toc-create-temperature-dataset" class="nav-link" data-scroll-target="#create-temperature-dataset">5. Create Temperature Dataset</a></li>
+  <li><a href="#create-wind-dataset" id="toc-create-wind-dataset" class="nav-link" data-scroll-target="#create-wind-dataset">6. Create Wind Dataset</a></li>
+  <li><a href="#import-temp-and-rainfall-rds" id="toc-import-temp-and-rainfall-rds" class="nav-link" data-scroll-target="#import-temp-and-rainfall-rds">7. Import Temp and Rainfall rds</a></li>
+  <li><a href="#prepare-data-1" id="toc-prepare-data-1" class="nav-link" data-scroll-target="#prepare-data-1">8. Prepare Data</a></li>
+  <li><a href="#temperature" id="toc-temperature" class="nav-link" data-scroll-target="#temperature">8.1 Temperature</a></li>
+  <li><a href="#rainfall" id="toc-rainfall" class="nav-link" data-scroll-target="#rainfall">8.2 Rainfall</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -196,15 +211,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
+<section id="load-packages" class="level1">
+<h1>1. Load Packages</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, readr, psych, st, stars, tmap)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, readr, psych, st, stars, tmap, lubridate, visdat, ggiraph, reshape, ggthemes, plotly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="import-data" class="level1">
+<h1>2. Import Data</h1>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>weather_list <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path =</span> <span class="st">"data"</span>,</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">recursive =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.csv$"</span>,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                           <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(weather_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data_list <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path =</span> <span class="st">"data/aspatial"</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">recursive =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">.csv$"</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(data_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
  [1] "data/aspatial/Admiralty.csv"            
@@ -228,7 +248,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(weather_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(data_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 168836 Columns: 13
 ── Column specification ────────────────────────────────────────────────────────
@@ -241,8 +261,7 @@ dbl  (3): Year, Month, Day
 </div>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">gsub</span>(<span class="st">" "</span>, <span class="st">"_"</span>, .x), <span class="fu">everything</span>())</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 168,836
 Columns: 13
@@ -261,8 +280,323 @@ $ Mean_Wind_Speed          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N
 $ Max_Wind_Speed           &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</code></pre>
 </div>
 </div>
+</section>
+<section id="prepare-data" class="level1">
+<h1>3. Prepare Data</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span> </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Station =</span> <span class="fu">as.factor</span>(Station),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">Date =</span> <span class="fu">make_date</span>(<span class="at">year =</span> Year, <span class="at">month =</span> Month, <span class="at">day =</span> Day),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">Month =</span> <span class="fu">month</span>(Date, <span class="at">label =</span> <span class="cn">TRUE</span>),         </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">Day =</span> <span class="fu">day</span>(Date),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">Daily_Rainfall_Total =</span> <span class="fu">as.numeric</span>(Daily_Rainfall_Total),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">Highest_30_Min_Rainfall =</span> <span class="fu">as.numeric</span>(Highest_30_Min_Rainfall),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">Highest_60_Min_Rainfall =</span> <span class="fu">as.numeric</span>(Highest_60_Min_Rainfall),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">Highest_120_Min_Rainfall =</span> <span class="fu">as.numeric</span>(Highest_120_Min_Rainfall),</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">Mean_Temperature =</span> <span class="fu">as.numeric</span>(Mean_Temperature), </span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">Maximum_Temperature =</span> <span class="fu">as.numeric</span>(Maximum_Temperature), </span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">Minimum_Temperature =</span> <span class="fu">as.numeric</span>(Minimum_Temperature),</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">Mean_Wind_Speed =</span> <span class="fu">as.numeric</span>(Mean_Wind_Speed),</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">Max_Wind_Speed =</span> <span class="fu">as.numeric</span>(Max_Wind_Speed))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There were 9 warnings in `mutate()`.
+The first warning was:
+ℹ In argument: `Daily_Rainfall_Total = as.numeric(Daily_Rainfall_Total)`.
+Caused by warning:
+! NAs introduced by coercion
+ℹ Run `dplyr::last_dplyr_warnings()` to see the 8 remaining warnings.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 168,836
+Columns: 14
+$ Station                  &lt;fct&gt; Admiralty, Admiralty, Admiralty, Admiralty, A…
+$ Year                     &lt;dbl&gt; 2009, 2009, 2009, 2009, 2009, 2009, 2009, 200…
+$ Month                    &lt;ord&gt; Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, …
+$ Day                      &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14…
+$ Daily_Rainfall_Total     &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Highest_30_Min_Rainfall  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Highest_60_Min_Rainfall  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Highest_120_Min_Rainfall &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Mean_Temperature         &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Maximum_Temperature      &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Minimum_Temperature      &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Mean_Wind_Speed          &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Max_Wind_Speed           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Date                     &lt;date&gt; 2009-01-01, 2009-01-02, 2009-01-03, 2009-01-…</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>weather <span class="sc">%&gt;%</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10000</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vis_miss</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data_Preparation_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(weather, <span class="st">"data/weather.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="create-rainfall-dataset" class="level1">
+<h1>4. Create Rainfall Dataset</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>rainfall <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Station, Date, Year, Month, Day, Daily_Rainfall_Total, Highest_30_Min_Rainfall, Highest_60_Min_Rainfall, Highest_120_Min_Rainfall)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(rainfall)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 168,836
+Columns: 9
+$ Station                  &lt;fct&gt; Admiralty, Admiralty, Admiralty, Admiralty, A…
+$ Date                     &lt;date&gt; 2009-01-01, 2009-01-02, 2009-01-03, 2009-01-…
+$ Year                     &lt;dbl&gt; 2009, 2009, 2009, 2009, 2009, 2009, 2009, 200…
+$ Month                    &lt;ord&gt; Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, …
+$ Day                      &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14…
+$ Daily_Rainfall_Total     &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Highest_30_Min_Rainfall  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Highest_60_Min_Rainfall  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Highest_120_Min_Rainfall &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(rainfall, <span class="st">"data/rainfall.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>rainfall <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10000</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vis_miss</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data_Preparation_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="create-temperature-dataset" class="level1">
+<h1>5. Create Temperature Dataset</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Station, Date, Year, Month, Day, Mean_Temperature, Maximum_Temperature, Minimum_Temperature)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(temp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 168,836
+Columns: 8
+$ Station             &lt;fct&gt; Admiralty, Admiralty, Admiralty, Admiralty, Admira…
+$ Date                &lt;date&gt; 2009-01-01, 2009-01-02, 2009-01-03, 2009-01-04, 2…
+$ Year                &lt;dbl&gt; 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 20…
+$ Month               &lt;ord&gt; Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, …
+$ Day                 &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,…
+$ Mean_Temperature    &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ Maximum_Temperature &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ Minimum_Temperature &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(temp, <span class="st">"data/temp.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>temp <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10000</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vis_miss</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data_Preparation_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="create-wind-dataset" class="level1">
+<h1>6. Create Wind Dataset</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>wind <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Station, Year, Date, Month, Day, Mean_Wind_Speed, Max_Wind_Speed)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(wind)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 168,836
+Columns: 7
+$ Station         &lt;fct&gt; Admiralty, Admiralty, Admiralty, Admiralty, Admiralty,…
+$ Year            &lt;dbl&gt; 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, …
+$ Date            &lt;date&gt; 2009-01-01, 2009-01-02, 2009-01-03, 2009-01-04, 2009-…
+$ Month           &lt;ord&gt; Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan,…
+$ Day             &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,…
+$ Mean_Wind_Speed &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ Max_Wind_Speed  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(wind, <span class="st">"data/wind.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>wind <span class="sc">%&gt;%</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10000</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">vis_miss</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Data_Preparation_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="import-temp-and-rainfall-rds" class="level1">
+<h1>7. Import Temp and Rainfall rds</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>rainfall <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/rainfall.rds"</span>)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/temp.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="prepare-data-1" class="level1">
+<h1>8. Prepare Data</h1>
+</section>
+<section id="temperature" class="level1">
+<h1>8.1 Temperature</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span> </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">if_all</span>(<span class="fu">c</span>(Mean_Temperature), is.na))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  filter(!if_all(c(Mean_Temperature, Maximum_Temperature, Minimum_Temperature), is.na))</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(temp)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 109,278
+Columns: 8
+$ Station             &lt;fct&gt; Admiralty, Admiralty, Admiralty, Admiralty, Admira…
+$ Date                &lt;date&gt; 2009-01-24, 2009-01-25, 2009-01-26, 2009-01-28, 2…
+$ Year                &lt;dbl&gt; 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 20…
+$ Month               &lt;ord&gt; Jan, Jan, Jan, Jan, Jan, Jan, Jan, Feb, Feb, Feb, …
+$ Day                 &lt;int&gt; 24, 25, 26, 28, 29, 30, 31, 1, 2, 3, 4, 5, 6, 7, 8…
+$ Mean_Temperature    &lt;dbl&gt; 26.8, 25.9, 25.9, 26.6, 26.3, 26.5, 26.4, 26.2, 26…
+$ Maximum_Temperature &lt;dbl&gt; 31.4, 27.8, 29.6, 31.9, 30.0, 30.9, 29.9, 29.1, 31…
+$ Minimum_Temperature &lt;dbl&gt; 24.4, 24.4, 23.7, 23.7, 23.9, 24.2, 24.8, 24.7, 23…</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>temp_year <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Year) <span class="sc">%&gt;%</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Avg_Mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(Mean_Temperature), <span class="dv">1</span>),</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Max =</span> <span class="fu">round</span>(<span class="fu">mean</span>(Maximum_Temperature), <span class="dv">1</span>),</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Min =</span> <span class="fu">round</span>(<span class="fu">mean</span>(Minimum_Temperature), <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Station'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(temp_year)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 323
+Columns: 5
+Groups: Station [18]
+$ Station  &lt;fct&gt; Admiralty, Admiralty, Admiralty, Admiralty, Admiralty, Admira…
+$ Year     &lt;dbl&gt; 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2…
+$ Avg_Mean &lt;dbl&gt; 27.7, 27.7, 27.3, 27.4, 27.5, 27.5, 27.9, 28.1, 27.6, 27.6, 2…
+$ Avg_Max  &lt;dbl&gt; 31.8, 32.0, 31.3, 31.6, 31.6, 31.7, 32.0, 32.0, 31.7, 31.8, 3…
+$ Avg_Min  &lt;dbl&gt; 25.0, 24.9, 24.7, 24.7, 24.8, 24.8, 25.3, 25.4, 25.0, 24.9, 2…</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>temp_month <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Year, Month) <span class="sc">%&gt;%</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Avg_Mean =</span> <span class="fu">round</span>(<span class="fu">mean</span>(Mean_Temperature), <span class="dv">1</span>),</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Max =</span> <span class="fu">round</span>(<span class="fu">mean</span>(Maximum_Temperature), <span class="dv">1</span>),</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Min =</span> <span class="fu">round</span>(<span class="fu">mean</span>(Minimum_Temperature), <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Station', 'Year'. You can override using
+the `.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(temp_month)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 3,715
+Columns: 6
+Groups: Station, Year [323]
+$ Station  &lt;fct&gt; Admiralty, Admiralty, Admiralty, Admiralty, Admiralty, Admira…
+$ Year     &lt;dbl&gt; 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2…
+$ Month    &lt;ord&gt; Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec, J…
+$ Avg_Mean &lt;dbl&gt; 26.3, 26.8, 26.9, 28.1, 28.5, 28.9, 28.1, 28.1, 28.3, 28.0, 2…
+$ Avg_Max  &lt;dbl&gt; 30.2, 31.4, 32.1, 32.2, 32.6, 32.9, 31.9, 31.8, 32.0, 32.1, 3…
+$ Avg_Min  &lt;dbl&gt; 24.2, 24.3, 24.0, 25.1, 25.1, 26.0, 25.2, 25.3, 25.5, 25.0, 2…</code></pre>
+</div>
+</div>
+<p>Prepare temperature for time series analysis:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>temp_month_melted <span class="ot">&lt;-</span> <span class="fu">melt</span>(temp_month, <span class="at">id.vars =</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"Month"</span>), <span class="at">measure.vars =</span> <span class="st">"Avg_Mean"</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>temp_month_melted<span class="sc">$</span>Month <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(temp_month_melted<span class="sc">$</span>Month)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>temp_month_melted <span class="ot">&lt;-</span> temp_month_melted <span class="sc">%&gt;%</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Avg_Mean_Temp =</span> value)</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(temp_month_melted)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 3,715
+Columns: 4
+$ Year          &lt;dbl&gt; 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 2009, 20…
+$ Month         &lt;ord&gt; Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, D…
+$ variable      &lt;fct&gt; Avg_Mean, Avg_Mean, Avg_Mean, Avg_Mean, Avg_Mean, Avg_Me…
+$ Avg_Mean_Temp &lt;dbl&gt; 26.3, 26.8, 26.9, 28.1, 28.5, 28.9, 28.1, 28.1, 28.3, 28…</code></pre>
+</div>
+</div>
+<p>Prepare temperature for geospatial analysis:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>temp_map <span class="ot">&lt;-</span> temp <span class="sc">%&gt;%</span> </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Year) <span class="sc">%&gt;%</span> </span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Annual_Mean_Temperature =</span> <span class="fu">sum</span>(Mean_Temperature, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">Annual_Maximum_Temperature =</span> <span class="fu">sum</span>(Maximum_Temperature, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">Annual_Minimum_Temperature =</span> <span class="fu">sum</span>(Minimum_Temperature, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Station'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(temp_map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 323
+Columns: 5
+$ Station                    &lt;fct&gt; Admiralty, Admiralty, Admiralty, Admiralty,…
+$ Year                       &lt;dbl&gt; 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2…
+$ Annual_Mean_Temperature    &lt;dbl&gt; 9403.9, 9959.1, 9956.6, 10019.0, 10029.9, 8…
+$ Annual_Maximum_Temperature &lt;dbl&gt; 10788.8, 11493.7, 11414.2, 11561.9, 11535.2…
+$ Annual_Minimum_Temperature &lt;dbl&gt; 8463.6, 8950.9, 9013.2, 9047.4, 9042.6, 747…</code></pre>
+</div>
+</div>
+</section>
+<section id="rainfall" class="level1">
+<h1>8.2 Rainfall</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>rainfall <span class="ot">&lt;-</span> rainfall <span class="sc">%&gt;%</span> </span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">if_all</span>(<span class="fu">c</span>(Daily_Rainfall_Total), is.na))</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  filter(!if_all(c(Mean_Temperature, Maximum_Temperature, Minimum_Temperature), is.na))</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(rainfall)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 167,177
+Columns: 9
+$ Station                  &lt;fct&gt; Admiralty, Admiralty, Admiralty, Admiralty, A…
+$ Date                     &lt;date&gt; 2009-01-22, 2009-01-23, 2009-01-24, 2009-01-…
+$ Year                     &lt;dbl&gt; 2009, 2009, 2009, 2009, 2009, 2009, 2009, 200…
+$ Month                    &lt;ord&gt; Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, Jan, …
+$ Day                      &lt;int&gt; 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 1, 2,…
+$ Daily_Rainfall_Total     &lt;dbl&gt; 0.0, 0.0, 0.0, 0.8, 0.0, 0.0, 0.0, 0.0, 0.0, …
+$ Highest_30_Min_Rainfall  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Highest_60_Min_Rainfall  &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Highest_120_Min_Rainfall &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…</code></pre>
+</div>
+</div>
+<p>Prepare rainfall for geospatial analysis:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>rainfall_map <span class="ot">&lt;-</span> rainfall <span class="sc">%&gt;%</span> </span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Year) <span class="sc">%&gt;%</span> </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Annual_Rainfall_Total =</span> <span class="fu">sum</span>(Daily_Rainfall_Total, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">Annual_Highest_30_Min_Rainfall =</span> <span class="fu">sum</span>(Highest_30_Min_Rainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">Annual_Highest_60_Min_Rainfall =</span> <span class="fu">sum</span>(Highest_60_Min_Rainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Annual_Highest_120_Min_Rainfall =</span> <span class="fu">sum</span>(Highest_120_Min_Rainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Station'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(rainfall_map)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 469
+Columns: 6
+$ Station                         &lt;fct&gt; Admiralty, Admiralty, Admiralty, Admir…
+$ Year                            &lt;dbl&gt; 2009, 2010, 2011, 2012, 2013, 2014, 20…
+$ Annual_Rainfall_Total           &lt;dbl&gt; 1736.6, 2980.8, 2871.8, 2916.8, 2559.8…
+$ Annual_Highest_30_Min_Rainfall  &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 0.0, 1184.8, 1341.…
+$ Annual_Highest_60_Min_Rainfall  &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 0.0, 1434.8, 1636.…
+$ Annual_Highest_120_Min_Rainfall &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 0.0, 1556.3, 1852.…</code></pre>
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
