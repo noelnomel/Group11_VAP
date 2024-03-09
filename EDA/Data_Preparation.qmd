@@ -21,27 +21,190 @@ On the [MSS Historical Daily Records](#0) page, we are able to select the weathe
 
 ![](images/clipboard-2867577995.png){width="625"}
 
-## 2.1 Installing R packages
+For this project, we will analyse the historical temperature and rainfall data collected by MSS based on the 18 weather stations (Table 1).
+
+The selected stations with complete datasets from 1980 onwards provide a long-term perspective on climate trends, which is crucial for accurate modelling and prediction. Automated instruments from 2009 enhance data reliability and allow continuous monitoring without manual intervention gaps. 
+
+![](images/clipboard-3377283505.png){width="572"}
+
+As there are 42 years of monthly data to download for each station, my team has written a Robotic Process Automation script to download all the necessary data.
+
+# 3 Data Preparation
+
+## 3.1 Installing R packages
 
 The code below uses `p_load()` of the Pacman package to check if all the required packages are installed on the laptop. If they are, then they will be launched into the R environment.
 
+|                                                                               |                                                                                                              |
+|-------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| **Package**                                                                   | **Description**                                                                                              |
+| [**tidyverse**](https://www.tidyverse.org/)                                   | A collection of core packages designed for data science used extensively for data preparation and wrangling. |
+| [**lubridate**](https://lubridate.tidyverse.org/reference/make_datetime.html) | For manipulating date-times.                                                                                 |
+| [**janitor**](https://sfirke.github.io/janitor/reference/)                    | For quick formatting of data frame columns.                                                                  |
+| [**fs**](https://github.com/r-lib/fs)                                         | For retrieving a list of file names in our directory for import into R                                       |
+
 ```{r}
-pacman::p_load(tidyverse, readr, psych, st, stars, tmap)
+pacman::p_load(readr, tidyverse, forecast, janitor, fs)
 ```
 
+## 3.2 Importing data
+
+Let's read all the 5552 CSV files downloaded for the 18 weather stations that have records from the year 1980 onwards.
+
+-   `locale` argument in `read_csv()` is to specify the encoding as [Latin-1](https://en.wikipedia.org/wiki/ISO/IEC_8859-1), as some of the headers contain special characters, like the degree symbol (°). The Latin-1 encoding ensures R can read and process such special characters.
+
+-   [`col_types`](https://readr.tidyverse.org/reference/cols.html) argument imports all columns as character data type.
+
+-   [`clean_names()`](https://www.rdocumentation.org/packages/janitor/versions/1.2.0/topics/clean_names) of the **janitor** package converts into snake case and transliterates special characters such as the degree symbol (°) to ASCII.
+
 ```{r}
-weather_list <- list.files(path = "data",
-                           recursive = TRUE,
-                           pattern = "\\.csv$",
-                           full.names = TRUE)
-list(weather_list)
+ #| eval: False
+filenames <- fs::dir_ls("data/raw_data/") 
+
+# Read all files and clean the column names
+data <- filenames %>%
+    map_df(~ read_csv(.x, 
+                      locale = locale(encoding = "latin1"),
+                      col_types = cols(.default = "character")
+                      ) %>% 
+             janitor::clean_names()
+    ) 
+
+glimpse(data)
 ```
 
+::: callout-note
+All the 18 weather stations have a total of 168,439 records.
+
+The data shows that there are two sets of variables for mean, maximum, and minimum temperature records:
+
+-   mean_temperature_c, maximum_temperature_c, and minimum_temperature_c
+
+-   mean_temperature_a_c, maximum_temperature_a_c, and minimum_temperature_a_c
+
+Some year's data are in the first set of variables and others are in the second set of variables. This might happen during `clean_names()` where there is a minor difference in the column names from different files.
+:::
+
+As it will be meaningful to also analyse weather data by regions in Singapore. Hence, we also searched for each weather station's region on public websites like the HDB website and data.gov.sg. Let's import the region information now.
+
 ```{r}
-weather <- read_csv(weather_list)
+ #| eval: False
+region <- read_csv("data/Region.csv") 
+glimpse(region)
+```
 
-weather <- weather %>%
-  rename_with(~ gsub(" ", "_", .x), everything())
+## 3.3 Data Wrangling
 
+### 3.3.1 Remove extra columns
+
+Let's use `coalesce()` function to copy the values from the second set of temperature values to the first set and then deselect the second set of columns. We are also not focusing on the wind speed variables, hence we will deselect the 2 variables on wind speed.
+
+```{r}
+ #| eval: False
+data$mean_temperature_c <- coalesce(data$mean_temperature_c, 
+                                    data$mean_temperature_a_c) 
+data$maximum_temperature_c <- coalesce(data$maximum_temperature_c, 
+                                       data$maximum_temperature_a_c)
+data$minimum_temperature_c <- coalesce(data$minimum_temperature_c,                                                                data$minimum_temperature_a_c)
+
+data %>% 
+  select(-c(mean_temperature_a_c, 
+            maximum_temperature_a_c, 
+            minimum_temperature_a_c, 
+            mean_wind_speed_km_h, 
+            max_wind_speed_km_h))
+
+glimpse(data)
+```
+
+### 3.3.2 Remove weird characters
+
+There are some weird characters ('\u0097') in the data frame. Let's replace them with NA.
+
+```{r}
+ #| eval: False
+data <- data %>% 
+  mutate_all(~ ifelse(. == "\u0097", NA, .))
+glimpse(data)
+```
+
+### 3.3.3 Tidy the data
+
+Finally, let's clean up the weather data and create a column for date, change the necessary columns to numeric, and shorten the column names for simplicity.
+
+```{r}
+#| eval: False
+weather <- data %>% 
+  mutate(station = station,
+       year = as.numeric(year),
+       Date = make_date(year = year, month = month, day = 1),
+       month = lubridate::month(Date, label = TRUE),         
+       day = as.numeric(day),
+       daily_rainfall_total_mm = as.numeric(daily_rainfall_total_mm), 
+       highest_30_min_rainfall_mm = as.numeric(highest_30_min_rainfall_mm), 
+       highest_60_min_rainfall_mm = as.numeric(highest_60_min_rainfall_mm),
+       highest_120_min_rainfall_mm = as.numeric(highest_120_min_rainfall_mm),
+       mean_temperature_c = as.numeric(mean_temperature_c), 
+       maximum_temperature_c = as.numeric(maximum_temperature_c), 
+       minimum_temperature_c = as.numeric(minimum_temperature_c)) %>% 
+  rename(
+    Station = station,
+    Year = year,
+    Month = month,
+    Day = day,
+    Rainfall = daily_rainfall_total_mm,
+    Rainfall30 = highest_30_min_rainfall_mm,
+    Rainfall60 = highest_60_min_rainfall_mm,
+    Rainfall120 = highest_120_min_rainfall_mm,
+    MeanTemperature = mean_temperature_c,
+    MaxTemperature = maximum_temperature_c,
+    MinTemperature = minimum_temperature_c
+  ) %>% 
+  subset(select = -c(mean_temperature_a_c,
+                     maximum_temperature_a_c,
+                     minimum_temperature_a_c, 
+                     mean_wind_speed_km_h, 
+                     max_wind_speed_km_h))
+```
+
+### 3.3.4 Merge datasets
+
+Let's join the weather data with its region information using the common variable 'Station'.
+
+```{r}
+#| eval: False
+weather <- merge(weather, region, by= "Station")
 glimpse(weather)
+```
+
+### 3.3.5 Create subsets of data
+
+Let's create subsets of weather data for only Temperature or Rainfall and save as RDS files for easy loading when we are developing for the subsequent analysis.
+
+```{r}
+ #| eval: False
+Temp_YM <- weather %>% 
+   group_by(Station, Region, Year, Month) %>% 
+   reframe(Date = Date,
+            MeanTemp = round(mean(MeanTemperature, na.rm = TRUE),1),
+            MaxTemp = round(max(MaxTemperature, na.rm = TRUE),1),
+            MinTemp = round(min(MinTemperature, na.rm = TRUE),1) ) %>% 
+   distinct() %>% 
+   ungroup() %>% 
+   filter(!is.na(MeanTemp))
+
+write_rds(Temp_YM, "data/temperature.rds")
+
+Rainfall_YM <- weather %>% 
+   group_by(Station, Region, Year, Month) %>% 
+   reframe(Date = Date,
+            TotalRainfall = round(sum(Rainfall, na.rm = TRUE),1),
+            TotalRainfall30 = round(sum(Rainfall30, na.rm = TRUE),1),
+            TotalRainfall60 = round(sum(Rainfall60, na.rm = TRUE),1),
+            TotalRainfall120 = round(sum(Rainfall120, na.rm = TRUE),1)) %>% 
+   distinct() %>% 
+   ungroup() %>% 
+   filter(!is.na(TotalRainfall))
+
+write_rds(Rainfall_YM, "data/rainfall.rds")
 ```
