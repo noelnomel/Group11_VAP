@@ -9,22 +9,29 @@ pacman::p_load(tidyverse, ggdist, ggridges, heatmaply, ggiraph)
 ```
 
 ```{r}
-data <- list.files(path="WeatherStation_Cleaned", pattern="*.csv", full.names=TRUE)
+#| eval: False
+data <- list.files(path="data", pattern="*.csv", full.names=TRUE)
 data
 
 weather <- read_csv(data)
 ```
 ```{r}
+weather <- readRDS("data/weather.rds")
+```
+
+```{r}
 weather <- weather %>%
-  rename('Mean_Temp' = 'Mean Temperature',
-         'Max_Temp' = 'Maximum Temperature',
-         'Min_Temp' = 'Minimum Temperature') %>%
+  rename('Mean_Temp' = 'Mean_Temperature',
+         'Max_Temp' = 'Maximum_Temperature',
+         'Min_Temp' = 'Minimum_Temperature') %>%
   mutate(Mean_Temp = as.double(Mean_Temp),
          Max_Temp = as.double(Max_Temp),
          Min_Temp = as.double(Min_Temp))
 ```
 
+
 # heatmap
+
 ```{r}
 temp <- weather %>%
   select(c(1,2,9:11)) %>%
@@ -45,6 +52,7 @@ temp_heatmap <- heatmap(temp_mat,
 ```
 
 # time series - average of mean temperatures
+
 ```{r}
 ggplot(data = temp,
        aes(x = Year,
@@ -97,6 +105,7 @@ girafe(ggobj = line,
 ```
 
 # time series - average of max temperatures
+
 ```{r}
 temp$max_tooltip <- c(paste0(
   "Year: ", temp$Year,
@@ -132,9 +141,8 @@ girafe(ggobj = line,
 
 ```
 
-
-
 # time series - average of min temperatures
+
 ```{r}
 temp$min_tooltip <- c(paste0(
   "Year: ", temp$Year,
@@ -169,21 +177,3 @@ girafe(ggobj = line,
          opts_hover_inv(css = "stroke-width: 1;opacity:0.6;")))
 
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
