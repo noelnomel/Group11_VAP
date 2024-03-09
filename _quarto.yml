@@ -14,21 +14,17 @@ website:
       - text: Station
         href: Station/station.html
         
+      - text: Data Preparation
+        href: EDA/Data_Preparation.html
+        
       - text: Exploratory Data Analysis
         menu:
-          - text: Data Preparation
-            href: EDA/Data_Preparation.html
           - text: EDA_Noel
             href: EDA/EDA_Noel.html
           - text: EDA_Vanessa
             href: EDA/EDA_Vanessa.html
           - text: EDA_Wankee
             href: EDA/EDA_Wankee.html
-      
-      - text: Rainfall
-      - text: Temperature
-      - text: Relative Humidity
-      - text: Wind
       
       - text: Shiny App
         href: https://chockwankee.shinyapps.io/Group11_VAP_ShinyApp/
