@@ -1,6 +1,29 @@
 ---
 title: "Data Preparation"
+date: "9 March 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  freeze: true
+  warning: false
+  message: false
+  error: true
 ---
+
+# 1 Overview
+
+This page will explain in detail how we extract the data from the [Meteorological Service Singapore (MSS)](http://www.weather.gov.sg/climate-historical-daily/) website and how we clean the data for our subsequent analysis.
+
+# 2 Data Extraction
+
+On the [MSS Historical Daily Records](#0) page, we are able to select the weather station, month and year to display. After that, we can click on the CSV option to download the data.
+
+![](images/clipboard-2867577995.png){width="625"}
+
+## 2.1 Installing R packages
+
+The code below uses `p_load()` of the Pacman package to check if all the required packages are installed on the laptop. If they are, then they will be launched into the R environment.
 
 ```{r}
 pacman::p_load(tidyverse, readr, psych, st, stars, tmap)
