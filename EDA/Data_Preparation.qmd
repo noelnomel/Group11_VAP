@@ -44,22 +44,20 @@ The code below uses `p_load()` of the Pacman package to check if all the require
 | [**lubridate**](https://lubridate.tidyverse.org/reference/make_datetime.html) | For manipulating date-times.                                                                                 |
 | [**janitor**](https://sfirke.github.io/janitor/reference/)                    | For quick formatting of data frame columns.                                                                  |
 | [**fs**](https://github.com/r-lib/fs)                                         | For retrieving a list of file names in our directory for import into R                                       |
+| [**visdat**](https://www.rdocumentation.org/packages/visdat/versions/0.6.0)   | For checking missing values in a dataframe                                                                   |
 
 ```{r}
-pacman::p_load(readr, tidyverse, forecast, janitor, fs)
+pacman::p_load(readr, tidyverse, forecast, janitor, fs, visdat)
 ```
 
 ## 3.2 Importing data
 
-Let's read all the 5,552 CSV files downloaded for the 18 weather stations that have records from the year 1980 onwards.
+Let's read all the 5,547 CSV files downloaded for the 18 weather stations that have records from the year 1980 onwards.
 
 -   [`dir_ls()`](https://fs.r-lib.org/reference/dir_ls.html) function from the **fs** package in R to list *filenames* in our directory where we have saved the monthly historical records.
 
 -   [`map_df()`](https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/map) function from the **purrr** package is used to iterate over each file in the directory.
 
-```{=html}
-<!-- -->
-```
 -   `locale` argument in `read_csv()` is to specify the encoding as [Latin-1](https://en.wikipedia.org/wiki/ISO/IEC_8859-1), as some of the headers contain special characters, like the degree symbol (°). The Latin-1 encoding ensures R can read and process such special characters.
 
 -   [`col_types`](https://readr.tidyverse.org/reference/cols.html) argument imports all columns as character data type.
@@ -83,7 +81,7 @@ glimpse(data)
 ```
 
 ::: callout-note
-All the 18 weather stations have a total of 168,439 records.
+All the 18 weather stations have a total of 168,836 records.
 
 The data shows that there are two sets of variables for mean, maximum, and minimum temperature records:
 
@@ -216,4 +214,11 @@ Rainfall_YM <- weather %>%
    filter(!is.na(TotalRainfall))
 
 write_rds(Rainfall_YM, "data/rainfall.rds")
+```
+
+Check to ensure there is no missing data in Temp_YM and Rainfall_YM.
+
+```{r}
+vis_miss(Temp_YM)
+vis_miss(Rainfall_YM)
 ```
