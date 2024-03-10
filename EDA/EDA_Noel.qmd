@@ -170,6 +170,40 @@ girafe(ggobj = line,
 
 ```
 
+# confidence interval
+
+```{r}
+tooltip <- function(y, ymax, accuracy = 0.1) {
+  mean <- scales::number(y, accuracy = accuracy)
+  sem <- scales::number(ymax - y, accuracy = accuracy)
+  paste("Average of mean temperature:", mean, "+/-", sem)
+}
+
+gg_pt <- ggplot(data = tengah_sep,
+                aes(x = Year)) +
+  stat_summary(aes(y = Mean_Temp,
+                   tooltip = after_stat(
+                     tooltip(y, ymax))),
+               fun.data = "mean_se",
+               geom = GeomInteractiveCol,
+               fill = "rosybrown2"
+               ) +
+  stat_summary(aes(y = Mean_Temp),
+               fun.data = mean_se,
+               geom = "errorbar", width = 0.2, linewidth = 0.2) +
+  ylab("Mean Temperature (°C)") +
+  xlab("Year") +
+  theme_classic() +
+  ggtitle("Confidence Interval of Daily Mean Temperature Recorded At Tengah Weather Station",
+          subtitle = "September 1986, 1993, 2003, 2013, 2023") +
+  theme(plot.title = element_text(size = 10),
+        plot.subtitle = element_text(size = 8),
+        axis.title.x = element_text(size = 4.5)) 
+
+girafe(ggobj = gg_pt,
+       width_svg = 8,
+       height_svg = 8*0.618)
+```
 
 
 
