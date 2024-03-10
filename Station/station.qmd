@@ -1,5 +1,15 @@
 ---
 title: "Stations"
+author: "Wan Kee"
+date: "10 February 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  freeze: true
+  warning: false
+  message: false
+  error: true
 ---
 
 ```{r}
@@ -13,7 +23,6 @@ pacman::p_load(tmap, sf, tidyverse, sfdep, mapview, leaflet.providers, neaSG)
 
 ```{r}
 stn <- get_weatherstns()
-
 ```
 
 ```{r}
@@ -34,7 +43,8 @@ tmap_mode("view")
 
 tm_basemap("CartoDB.Positron") +
   tm_shape(stn_sf)+
-  tm_dots(col = "black", size = 0.1)
+  tm_dots(col = "black", size = 0.1)+
+  tm_view(set.zoom.limits = c(11,12))
 ```
 
 ```{r}

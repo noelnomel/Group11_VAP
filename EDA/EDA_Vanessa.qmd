@@ -8,7 +8,7 @@ pacman::p_load(tidyverse, ggstatsplot, plotly, ggplot2, ggdist, dplyr)
 ```
 
 ```{r}
-
+#| eval: false
 weather_list <- list.files(path = "WeatherStation_Cleaned",
                                recursive = TRUE,
                                pattern = "\\.csv$",
@@ -21,6 +21,18 @@ weather <- weather %>%
                  "HighestRainfall60" = 7, "HighestRainfall120" = 8,
                  "MeanTemp" = 9, "MaxTemp" = 10, "MinTemp" = 11,
                  "MeanWindSpeed" = 12, "MaxWindSpeed" = 13)
+
+```
+
+```{r}
+weather <- readRDS("data/weather.rds")
+
+weather <- weather %>% 
+          select(1:13, "DailyRainfall" = 5, "HighestRainfall30" = 6,
+                 "HighestRainfall60" = 7, "HighestRainfall120" = 8,
+                 "MeanTemp" = 9, "MaxTemp" = 10, "MinTemp" = 11,
+                 "MeanWindSpeed" = 12, "MaxWindSpeed" = 13)
+```
 
 ```
 

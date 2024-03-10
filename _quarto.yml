@@ -16,6 +16,8 @@ website:
         
       - text: Exploratory Data Analysis
         menu:
+          - text: Data Preparation
+            href: EDA/Data_Preparation.html
           - text: EDA_Noel
             href: EDA/EDA_Noel.html
           - text: EDA_Vanessa
