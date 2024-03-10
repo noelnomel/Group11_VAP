@@ -1,6 +1,13 @@
 ---
 title: "EDA_Noel"
 author: "Noel"
+format: html
+execute: 
+  echo: true # all code chunks will appear
+  eval: true # all code chunks will run live
+  warning: false # do not display warning message
+  freeze: true # do not render if no changes made
+  message: false
 ---
 
 ```{r}
@@ -9,44 +16,22 @@ pacman::p_load(tidyverse, ggdist, ggridges, heatmaply, ggiraph)
 ```
 
 ```{r}
-data <- list.files(path="data/aspatial", pattern="*.csv", full.names=TRUE)
-data
-
-weather <- read_csv(data)
-```
-```{r}
-weather <- weather %>%
-  rename('Mean_Temp' = 'Mean Temperature',
-         'Max_Temp' = 'Maximum Temperature',
-         'Min_Temp' = 'Minimum Temperature') %>%
-  mutate(Mean_Temp = as.double(Mean_Temp),
-         Max_Temp = as.double(Max_Temp),
-         Min_Temp = as.double(Min_Temp))
+temperature <- readRDS("data/temperature.rds")
 ```
 
-# heatmap
 ```{r}
-temp <- weather %>%
-  select(c(1,2,9:11)) %>%
-  drop_na() %>%
+temp_avg <- temperature %>%
   group_by(Station, Year) %>%
-  summarise(Avg_Mean = mean(Mean_Temp),
-            Avg_Max = mean(Max_Temp),
-            Avg_Min = mean(Min_Temp))
-
-temp_mat <- data.matrix(temp)
-
-
-temp_heatmap <- heatmap(temp_mat,
-                      scale="column", # normalise by columns
-                      cexRow = 0.6, # font size for y-axis
-                      cexCol = 0.8, # font size for x-axis
-                      margins = c(10, 4)) # to display plot with full labels shown
+  summarise(Avg_Mean = mean(MeanTemp),
+            Avg_Max = mean(MaxTemp),
+            Avg_Min = mean(MinTemp))
 ```
+
 
 # time series - average of mean temperatures
+
 ```{r}
-ggplot(data = temp,
+ggplot(data = temp_avg,
        aes(x = Year,
            y = Avg_Mean,
            group = Station,
@@ -62,12 +47,12 @@ ggplot(data = temp,
 ```
 
 ```{r}
-temp$mean_tooltip <- c(paste0(
-  "Year: ", temp$Year,
-  "\n Station: ", temp$Station,
-  "\n Mean Temp: ", temp$Avg_Mean, "°C"))
+temp_avg$mean_tooltip <- c(paste0(
+  "Year: ", temp_avg$Year,
+  "\n Station: ", temp_avg$Station,
+  "\n Mean Temp: ", temp_avg$Avg_Mean, "°C"))
 
-line <- ggplot(data = temp,
+line <- ggplot(data = temp_avg,
                aes(x = Year,
                    y = Avg_Mean,
                    group = Station,
@@ -75,7 +60,7 @@ line <- ggplot(data = temp,
                    data_id = Station)) +
   geom_line_interactive(size = 1.2,
                         alpha = 0.4) +
-  geom_point_interactive(aes(tooltip = temp$mean_tooltip),
+  geom_point_interactive(aes(tooltip = temp_avg$mean_tooltip),
                          fill = "white",
                          size = 1,
                          stroke = 1,
@@ -97,13 +82,14 @@ girafe(ggobj = line,
 ```
 
 # time series - average of max temperatures
-```{r}
-temp$max_tooltip <- c(paste0(
-  "Year: ", temp$Year,
-  "\n Station: ", temp$Station,
-  "\n Max Temp: ", temp$Avg_Max, "°C"))
 
-line <- ggplot(data = temp,
+```{r}
+temp_avg$max_tooltip <- c(paste0(
+  "Year: ", temp_avg$Year,
+  "\n Station: ", temp_avg$Station,
+  "\n Max Temp: ", temp_avg$Avg_Max, "°C"))
+
+line <- ggplot(data = temp_avg,
                aes(x = Year,
                    y = Avg_Max,
                    group = Station,
@@ -111,7 +97,7 @@ line <- ggplot(data = temp,
                    data_id = Station)) +
   geom_line_interactive(size = 1.2,
                         alpha = 0.4) +
-  geom_point_interactive(aes(tooltip = temp$max_tooltip),
+  geom_point_interactive(aes(tooltip = temp_avg$max_tooltip),
                          fill = "white",
                          size = 1,
                          stroke = 1,
@@ -132,16 +118,15 @@ girafe(ggobj = line,
 
 ```
 
-
-
 # time series - average of min temperatures
-```{r}
-temp$min_tooltip <- c(paste0(
-  "Year: ", temp$Year,
-  "\n Station: ", temp$Station,
-  "\n Min Temp: ", temp$Avg_Min, "°C"))
 
-line <- ggplot(data = temp,
+```{r}
+temp_avg$min_tooltip <- c(paste0(
+  "Year: ", temp_avg$Year,
+  "\n Station: ", temp_avg$Station,
+  "\n Min Temp: ", temp_avg$Avg_Min, "°C"))
+
+line <- ggplot(data = temp_avg,
                aes(x = Year,
                    y = Avg_Min,
                    group = Station,
@@ -149,7 +134,7 @@ line <- ggplot(data = temp,
                    data_id = Station)) +
   geom_line_interactive(size = 1.2,
                         alpha = 0.4) +
-  geom_point_interactive(aes(tooltip = temp$min_tooltip),
+  geom_point_interactive(aes(tooltip = temp_avg$min_tooltip),
                          fill = "white",
                          size = 1,
                          stroke = 1,
@@ -169,55 +154,4 @@ girafe(ggobj = line,
          opts_hover_inv(css = "stroke-width: 1;opacity:0.6;")))
 
 ```
-
-# confidence interval
-
-```{r}
-tooltip <- function(y, ymax, accuracy = 0.1) {
-  mean <- scales::number(y, accuracy = accuracy)
-  sem <- scales::number(ymax - y, accuracy = accuracy)
-  paste("Average of mean temperature:", mean, "+/-", sem)
-}
-
-gg_pt <- ggplot(data = tengah_sep,
-                aes(x = Year)) +
-  stat_summary(aes(y = Mean_Temp,
-                   tooltip = after_stat(
-                     tooltip(y, ymax))),
-               fun.data = "mean_se",
-               geom = GeomInteractiveCol,
-               fill = "rosybrown2"
-               ) +
-  stat_summary(aes(y = Mean_Temp),
-               fun.data = mean_se,
-               geom = "errorbar", width = 0.2, linewidth = 0.2) +
-  ylab("Mean Temperature (°C)") +
-  xlab("Year") +
-  theme_classic() +
-  ggtitle("Confidence Interval of Daily Mean Temperature Recorded At Tengah Weather Station",
-          subtitle = "September 1986, 1993, 2003, 2013, 2023") +
-  theme(plot.title = element_text(size = 10),
-        plot.subtitle = element_text(size = 8),
-        axis.title.x = element_text(size = 4.5)) 
-
-girafe(ggobj = gg_pt,
-       width_svg = 8,
-       height_svg = 8*0.618)
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
