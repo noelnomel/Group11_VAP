@@ -112,7 +112,8 @@ data$mean_temperature_c <- coalesce(data$mean_temperature_c,
                                     data$mean_temperature_a_c) 
 data$maximum_temperature_c <- coalesce(data$maximum_temperature_c, 
                                        data$maximum_temperature_a_c)
-data$minimum_temperature_c <- coalesce(data$minimum_temperature_c,                                                                data$minimum_temperature_a_c)
+data$minimum_temperature_c <- coalesce(data$minimum_temperature_c,     
+                                       data$minimum_temperature_a_c)
 
 data %>% 
   select(-c(mean_temperature_a_c, 
@@ -219,6 +220,7 @@ write_rds(Rainfall_YM, "data/rainfall.rds")
 Check to ensure there is no missing data in Temp_YM and Rainfall_YM.
 
 ```{r}
+#| eval: False
 vis_miss(Temp_YM)
 vis_miss(Rainfall_YM)
 ```
