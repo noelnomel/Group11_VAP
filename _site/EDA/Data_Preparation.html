@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.3.450">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -90,7 +90,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
     "search-detached-cancel-button-title": "Cancel",
-    "search-submit-button-title": "Submit"
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
   }
 }</script>
 
@@ -239,7 +240,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>For this project, we will analyse the historical temperature and rainfall data collected by MSS based on the 18 weather stations (Table 1).</p>
 <p>The selected stations with complete datasets from 1980 onwards provide a long-term perspective on climate trends, which is crucial for accurate modelling and prediction. Automated instruments from 2009 enhance data reliability and allow continuous monitoring without manual intervention gaps.</p>
 <p><img src="images/clipboard-3377283505.png" class="img-fluid" width="572"></p>
-<p>As there are 42 years of monthly data to download for each station, my team has written a Robotic Process Automation script to download all the necessary data. In total, we have 5,552 CSV files downloaded.</p>
+<p>As there are 42 years of monthly data to download for each station, my team has written a Robotic Process Automation script using UiPath software to download all the necessary data. In total, we have 5,552 CSV files downloaded.</p>
+<p><img src="images/clipboard-2705217927.png" class="img-fluid" width="561"></p>
 </section>
 <section id="data-preparation" class="level1">
 <h1>3 Data Preparation</h1>
@@ -278,6 +280,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="importing-data">3.2 Importing data</h2>
 <p>Let’s read all the 5,552 CSV files downloaded for the 18 weather stations that have records from the year 1980 onwards.</p>
 <ul>
+<li><p><a href="https://fs.r-lib.org/reference/dir_ls.html"><code>dir_ls()</code></a> function from the <strong>fs</strong> package in R to list <em>filenames</em> in our directory where we have saved the monthly historical records.</p></li>
+<li><p><a href="https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/map"><code>map_df()</code></a> function from the <strong>purrr</strong> package is used to iterate over each file in the directory.</p></li>
+</ul>
+<!-- -->
+<ul>
 <li><p><code>locale</code> argument in <code>read_csv()</code> is to specify the encoding as <a href="https://en.wikipedia.org/wiki/ISO/IEC_8859-1">Latin-1</a>, as some of the headers contain special characters, like the degree symbol (°). The Latin-1 encoding ensures R can read and process such special characters.</p></li>
 <li><p><a href="https://readr.tidyverse.org/reference/cols.html"><code>col_types</code></a> argument imports all columns as character data type.</p></li>
 <li><p><a href="https://www.rdocumentation.org/packages/janitor/versions/1.2.0/topics/clean_names"><code>clean_names()</code></a> of the <strong>janitor</strong> package converts into snake case and transliterates special characters such as the degree symbol (°) to ASCII.</p></li>
@@ -315,7 +322,7 @@ Note
 <p>Some year’s data are in the first set of variables and others are in the second set of variables. This might happen during <code>clean_names()</code> where there is a minor difference in the column names from different files.</p>
 </div>
 </div>
-<p>It will be meaningful to also analyse weather data by regions in Singapore. Hence, we also searched for each weather station’s region on public websites like the HDB website and data.gov.sg. Let’s import the region information now.</p>
+<p>It will be meaningful to also analyse weather data by region in Singapore. Hence, we also searched for each weather station’s region on public websites like the HDB website and data.gov.sg. Let’s import the region information now.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>region <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/Region.csv"</span>) </span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(region)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -399,7 +406,7 @@ Note
 </section>
 <section id="create-subsets-of-data" class="level3">
 <h3 class="anchored" data-anchor-id="create-subsets-of-data">3.3.5 Create subsets of data</h3>
-<p>Let’s create subsets of weather data for only Temperature or Rainfall and save as RDS files for easy loading when we are developing for the subsequent analysis.</p>
+<p>Let’s create subsets of weather data for only Temperature or Rainfall and save them as RDS files for easy loading when we are developing for the subsequent analysis.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Temp_YM <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span> </span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(Station, Region, Year, Month) <span class="sc">%&gt;%</span> </span>

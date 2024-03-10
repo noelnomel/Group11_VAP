@@ -27,7 +27,9 @@ The selected stations with complete datasets from 1980 onwards provide a long-te
 
 ![](images/clipboard-3377283505.png){width="572"}
 
-As there are 42 years of monthly data to download for each station, my team has written a Robotic Process Automation script to download all the necessary data. In total, we have 5,552 CSV files downloaded.
+As there are 42 years of monthly data to download for each station, my team has written a Robotic Process Automation script using UiPath software to download all the necessary data. In total, we have 5,552 CSV files downloaded.
+
+![](images/clipboard-2705217927.png){width="561"}
 
 # 3 Data Preparation
 
@@ -51,6 +53,13 @@ pacman::p_load(readr, tidyverse, forecast, janitor, fs)
 
 Let's read all the 5,552 CSV files downloaded for the 18 weather stations that have records from the year 1980 onwards.
 
+-   [`dir_ls()`](https://fs.r-lib.org/reference/dir_ls.html) function from the **fs** package in R to list *filenames* in our directory where we have saved the monthly historical records.
+
+-   [`map_df()`](https://www.rdocumentation.org/packages/purrr/versions/0.2.5/topics/map) function from the **purrr** package is used to iterate over each file in the directory.
+
+```{=html}
+<!-- -->
+```
 -   `locale` argument in `read_csv()` is to specify the encoding as [Latin-1](https://en.wikipedia.org/wiki/ISO/IEC_8859-1), as some of the headers contain special characters, like the degree symbol (°). The Latin-1 encoding ensures R can read and process such special characters.
 
 -   [`col_types`](https://readr.tidyverse.org/reference/cols.html) argument imports all columns as character data type.
@@ -85,7 +94,7 @@ The data shows that there are two sets of variables for mean, maximum, and minim
 Some year's data are in the first set of variables and others are in the second set of variables. This might happen during `clean_names()` where there is a minor difference in the column names from different files.
 :::
 
-It will be meaningful to also analyse weather data by regions in Singapore. Hence, we also searched for each weather station's region on public websites like the HDB website and data.gov.sg. Let's import the region information now.
+It will be meaningful to also analyse weather data by region in Singapore. Hence, we also searched for each weather station's region on public websites like the HDB website and data.gov.sg. Let's import the region information now.
 
 ```{r}
 #| eval: False
@@ -179,7 +188,7 @@ glimpse(weather)
 
 ### 3.3.5 Create subsets of data
 
-Let's create subsets of weather data for only Temperature or Rainfall and save as RDS files for easy loading when we are developing for the subsequent analysis.
+Let's create subsets of weather data for only Temperature or Rainfall and save them as RDS files for easy loading when we are developing for the subsequent analysis.
 
 ```{r}
 #| eval: False
