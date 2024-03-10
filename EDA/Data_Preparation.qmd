@@ -1,6 +1,6 @@
 ---
 title: "Data Preparation"
-date: "9 March 2024"
+date: "3 March 2024"
 date-modified: "last-modified"
 execute: 
   eval: true
@@ -23,11 +23,11 @@ On the [MSS Historical Daily Records](#0) page, we are able to select the weathe
 
 For this project, we will analyse the historical temperature and rainfall data collected by MSS based on the 18 weather stations (Table 1).
 
-The selected stations with complete datasets from 1980 onwards provide a long-term perspective on climate trends, which is crucial for accurate modelling and prediction. Automated instruments from 2009 enhance data reliability and allow continuous monitoring without manual intervention gaps. 
+The selected stations with complete datasets from 1980 onwards provide a long-term perspective on climate trends, which is crucial for accurate modelling and prediction. Automated instruments from 2009 enhance data reliability and allow continuous monitoring without manual intervention gaps.
 
 ![](images/clipboard-3377283505.png){width="572"}
 
-As there are 42 years of monthly data to download for each station, my team has written a Robotic Process Automation script to download all the necessary data.
+As there are 42 years of monthly data to download for each station, my team has written a Robotic Process Automation script to download all the necessary data. In total, we have 5,552 CSV files downloaded.
 
 # 3 Data Preparation
 
@@ -49,7 +49,7 @@ pacman::p_load(readr, tidyverse, forecast, janitor, fs)
 
 ## 3.2 Importing data
 
-Let's read all the 5552 CSV files downloaded for the 18 weather stations that have records from the year 1980 onwards.
+Let's read all the 5,552 CSV files downloaded for the 18 weather stations that have records from the year 1980 onwards.
 
 -   `locale` argument in `read_csv()` is to specify the encoding as [Latin-1](https://en.wikipedia.org/wiki/ISO/IEC_8859-1), as some of the headers contain special characters, like the degree symbol (°). The Latin-1 encoding ensures R can read and process such special characters.
 
