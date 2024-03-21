@@ -65,7 +65,7 @@ Let's read all the 5,547 CSV files downloaded for the 18 weather stations that h
 -   [`clean_names()`](https://www.rdocumentation.org/packages/janitor/versions/1.2.0/topics/clean_names) of the **janitor** package converts into snake case and transliterates special characters such as the degree symbol (°) to ASCII.
 
 ```{r}
-#| eval: False
+#| eval: True
 filenames <- fs::dir_ls("data/raw_data/") 
 
 # Read all files and clean the column names
@@ -95,7 +95,7 @@ Some year's data are in the first set of variables and others are in the second 
 It will be meaningful to also analyse weather data by region in Singapore. Hence, we also searched for each weather station's region on public websites like the HDB website and data.gov.sg. Let's import the region information now.
 
 ```{r}
-#| eval: False
+#| eval: True
 region <- read_csv("data/Region.csv") 
 glimpse(region)
 ```
@@ -107,7 +107,7 @@ glimpse(region)
 Let's use the `coalesce()` function to copy the values from the second set of temperature values to the first set and then deselect the second set of columns. We are also not focusing on the wind speed variables, hence we will deselect the 2 variables on wind speed.
 
 ```{r}
-#| eval: False
+#| eval: True
 data$mean_temperature_c <- coalesce(data$mean_temperature_c, 
                                     data$mean_temperature_a_c) 
 data$maximum_temperature_c <- coalesce(data$maximum_temperature_c, 
@@ -130,7 +130,7 @@ glimpse(data)
 There are some weird characters ('\u0097') in the data frame. Let's replace them with NA.
 
 ```{r}
-#| eval: False
+#| eval: True
 data <- data %>% 
   mutate_all(~ ifelse(. == "\u0097", NA, .))
 glimpse(data)
@@ -141,7 +141,7 @@ glimpse(data)
 Finally, let's clean up the weather data and create a column for date, change the necessary columns to numeric, and shorten the column names for simplicity.
 
 ```{r}
-#| eval: False
+#| eval: True
 weather <- data %>% 
   mutate(station = station,
        year = as.numeric(year),
@@ -180,7 +180,7 @@ weather <- data %>%
 Let's join the weather data with its region information using the common variable 'Station'.
 
 ```{r}
-#| eval: False
+#| eval: True
 weather <- merge(weather, region, by= "Station")
 glimpse(weather)
 ```
@@ -190,13 +190,13 @@ glimpse(weather)
 Let's create subsets of weather data for only Temperature or Rainfall and save them as RDS files for easy loading when we are developing for the subsequent analysis.
 
 ```{r}
-#| eval: False
+#| eval: True
 Temp_YM <- weather %>% 
    group_by(Station, Region, Year, Month) %>% 
-   reframe(Date = Date,
-            MeanTemp = round(mean(MeanTemperature, na.rm = TRUE),1),
-            MaxTemp = round(max(MaxTemperature, na.rm = TRUE),1),
-            MinTemp = round(min(MinTemperature, na.rm = TRUE),1) ) %>% 
+   reframe(Date = Date,            
+           MeanTemp = round(mean(MeanTemperature, na.rm = TRUE),1),
+           MaxTemp = round(max(MaxTemperature, na.rm = TRUE),1),
+           MinTemp = round(min(MinTemperature, na.rm = TRUE),1) ) %>% 
    distinct() %>% 
    ungroup() %>% 
    filter(!is.na(MeanTemp))
@@ -206,10 +206,10 @@ write_rds(Temp_YM, "data/temperature.rds")
 Rainfall_YM <- weather %>% 
    group_by(Station, Region, Year, Month) %>% 
    reframe(Date = Date,
-            TotalRainfall = round(sum(Rainfall, na.rm = TRUE),1),
-            TotalRainfall30 = round(sum(Rainfall30, na.rm = TRUE),1),
-            TotalRainfall60 = round(sum(Rainfall60, na.rm = TRUE),1),
-            TotalRainfall120 = round(sum(Rainfall120, na.rm = TRUE),1)) %>% 
+           TotalRainfall = round(sum(Rainfall, na.rm = TRUE),1),
+           TotalRainfall30 = round(sum(Rainfall30, na.rm = TRUE),1),
+           TotalRainfall60 = round(sum(Rainfall60, na.rm = TRUE),1),
+           TotalRainfall120 = round(sum(Rainfall120, na.rm = TRUE),1)) %>% 
    distinct() %>% 
    ungroup() %>% 
    filter(!is.na(TotalRainfall))
@@ -220,7 +220,75 @@ write_rds(Rainfall_YM, "data/rainfall.rds")
 Check to ensure there is no missing data in Temp_YM and Rainfall_YM.
 
 ```{r}
-#| eval: False
+#| eval: True
 vis_miss(Temp_YM)
 vis_miss(Rainfall_YM)
+```
+
+Finally, we create further subsets to be used in Confirmatory Data Analysis:
+
+```{r}
+Temp_Annual <- weather %>%
+  group_by(Station, Region, Year) %>%
+  summarise(Avg_Mean_Temp = round(mean(MeanTemperature, na.rm = TRUE),1),
+            Avg_Max_Temp = round(mean(MaxTemperature, na.rm = TRUE),1),
+            Avg_Min_Temp = round(mean(MinTemperature, na.rm = TRUE),1),
+            Max_Temp = round(max(MaxTemperature, na.rm = TRUE),1),
+            Min_Temp = round(min(MinTemperature, na.rm = TRUE),1)) %>%
+  distinct() %>%
+  ungroup() %>%
+  filter(!is.na(Avg_Mean_Temp))
+
+write_rds(Temp_Annual, "data/temp_annual.rds")
+
+Temp_Monthly <- weather %>%
+  group_by(Station, Region, Year, Month) %>%
+  summarise(Avg_Mean_Temp = round(mean(MeanTemperature, na.rm = TRUE),1),
+            Avg_Max_Temp = round(mean(MaxTemperature, na.rm = TRUE),1),
+            Avg_Min_Temp = round(mean(MinTemperature, na.rm = TRUE),1),
+            Max_Temp = round(max(MaxTemperature, na.rm = TRUE),1),
+            Min_Temp = round(min(MinTemperature, na.rm = TRUE),1)) %>%
+  distinct() %>%
+  ungroup() %>%
+  filter(!is.na(Avg_Mean_Temp))
+
+write_rds(Temp_Monthly, "data/temp_monthly.rds")
+
+Rainfall_Annual <- weather %>%
+  group_by(Station, Region, Year) %>% 
+   reframe(Date = Date,
+           Total_Rf = round(sum(Rainfall, na.rm = TRUE),1),
+           Total_Rf_30 = round(sum(Rainfall30, na.rm = TRUE),1),
+           Total_Rf_60 = round(sum(Rainfall60, na.rm = TRUE),1),
+           Total_Rf_120 = round(sum(Rainfall120, na.rm = TRUE),1),
+           Avg_Total_Rf = round(mean(Rainfall, na.rm = TRUE),1),
+           Avg_Total_Rf30 = round(mean(Rainfall30, na.rm = TRUE),1),
+           Avg_Total_Rf60 = round(mean(Rainfall60, na.rm = TRUE),1),
+           Avg_Total_Rf120 = round(mean(Rainfall120, na.rm = TRUE),1),
+           Min_Total_Rf = round(min(Rainfall, na.rm = TRUE),1),
+           Max_Total_Rf = round(max(Rainfall, na.rm = TRUE),1)) %>% 
+   distinct() %>% 
+   ungroup() %>% 
+   filter(!is.na(Total_Rf))
+
+write_rds(Rainfall_Annual, "data/rf_annual.rds")
+
+Rainfall_Monthly <- weather %>%
+  group_by(Station, Region, Year, Month) %>% 
+   reframe(Date = Date,
+           Total_Rf = round(sum(Rainfall, na.rm = TRUE),1),
+           Total_Rf_30 = round(sum(Rainfall30, na.rm = TRUE),1),
+           Total_Rf_60 = round(sum(Rainfall60, na.rm = TRUE),1),
+           Total_Rf_120 = round(sum(Rainfall120, na.rm = TRUE),1),
+           Avg_Total_Rf = round(mean(Rainfall, na.rm = TRUE),1),
+           Avg_Total_Rf30 = round(mean(Rainfall30, na.rm = TRUE),1),
+           Avg_Total_Rf60 = round(mean(Rainfall60, na.rm = TRUE),1),
+           Avg_Total_Rf120 = round(mean(Rainfall120, na.rm = TRUE),1),
+           Min_Total_Rf = round(min(Rainfall, na.rm = TRUE),1),
+           Max_Total_Rf = round(max(Rainfall, na.rm = TRUE),1)) %>% 
+   distinct() %>% 
+   ungroup() %>% 
+   filter(!is.na(Total_Rf))
+
+write_rds(Rainfall_Monthly, "data/rf_monthly.rds")
 ```
