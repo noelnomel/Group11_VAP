@@ -65,7 +65,7 @@ Let's read all the 5,547 CSV files downloaded for the 18 weather stations that h
 -   [`clean_names()`](https://www.rdocumentation.org/packages/janitor/versions/1.2.0/topics/clean_names) of the **janitor** package converts into snake case and transliterates special characters such as the degree symbol (°) to ASCII.
 
 ```{r}
-#| eval: True
+#| eval: False
 filenames <- fs::dir_ls("data/raw_data/") 
 
 # Read all files and clean the column names
@@ -78,6 +78,7 @@ data <- filenames %>%
     ) 
 
 glimpse(data)
+write_rds(data, "data/data.rds")
 ```
 
 ::: callout-note
@@ -91,6 +92,11 @@ The data shows that there are two sets of variables for mean, maximum, and minim
 
 Some year's data are in the first set of variables and others are in the second set of variables. This might happen during `clean_names()` where there is a minor difference in the column names from different files.
 :::
+
+```{r}
+data <- read_rds("data/data.rds")
+```
+
 
 It will be meaningful to also analyse weather data by region in Singapore. Hence, we also searched for each weather station's region on public websites like the HDB website and data.gov.sg. Let's import the region information now.
 
