@@ -20,7 +20,9 @@ website:
             href: EDA/Data_Preparation.html
           - text: EDA - Temperature
             href: EDA/EDA-Temperature.html
-      
+          - text: EDA - Rainfall
+            href: EDA/EDA-Rainfall.html      
+            
       - text: Shiny App
         href: https://chockwankee.shinyapps.io/Group11_VAP_ShinyApp/
         

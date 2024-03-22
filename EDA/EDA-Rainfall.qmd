@@ -1,0 +1,322 @@
+---
+title: "Exploratory Data Analysis - Rainfall"
+execute: 
+  echo: true # all code chunks will appear
+  eval: true # all code chunks will run live
+  warning: false # do not display warning message
+  freeze: true # do not render if no changes made
+  message: false
+---
+
+# 1 Import Packages
+
+```{r}
+pacman::p_load(tidyverse, readr, psych, st, stars, tmap, sf,
+               ggstatsplot, plotly, ggplot2, ggdist, dplyr, ggiraph)
+```
+
+# 2 Load the prepared files
+
+Let's load the RDS files after data preparation.
+
+```{r}
+rainfall <- readRDS("data/rainfall.rds")
+describe(rainfall)
+```
+
+# 3 Map of Singapore
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial", layer = "MPSZ-2019") %>% 
+  st_transform(crs=3414)
+glimpse(mpsz)
+```
+
+Let's take a look at the planning areas for the 5 regions.
+
+```{r}
+tmap_mode("view")
+
+tm_shape(mpsz) +
+  tm_polygons(col = "REGION_N", palette = "Set2")+
+  tm_layout(main.title = "Planning Area",
+            main.title.position = "left",
+            main.title.size = 1,
+            legend.show = FALSE,
+            frame = FALSE) +
+  tmap_options(check.and.fix = TRUE) +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+# 4 Rainfall analysis
+
+## 4.1 Analyse rainfall using maps
+
+Let's map the station to the planning area (PA).
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+station_to_PA <- c(
+  "Admiralty" = "WOODLANDS",
+  "Ang Mo Kio" = "ANG MO KIO",
+  "Boon Lay (East)" = "BOON LAY",
+  "Changi" = "CHANGI",
+  "Choa Chu Kang (South)" = "CHOA CHU KANG",
+  "Clementi" = "CLEMENTI",
+  "East Coast Parkway" = "BEDOK",
+  "Jurong (West)" = "JURONG WEST",
+  "Khatib" = "YISHUN",
+  "Marina Barrage" = "DOWNTOWN CORE",
+  "Newton" = "NEWTON",
+  "Pasir Panjang" = "PASIR PANJANG",
+  "Paya Lebar" = "PAYA LEBAR",
+  "Seletar" = "SELETAR",
+  "Sembawang" = "SEMBAWANG",
+  "Tai Seng" = "HOUGANG",
+  "Tengah" = "TENGAH",
+  "Tuas South" = "TUAS"
+)
+
+rainfall$PA <- station_to_PA[rainfall$Station]
+rainfall <- rainfall[, c("PA", setdiff(names(rainfall), "PA"))]
+head(rainfall)
+```
+
+```{r}
+rain_map <- rainfall %>% 
+  group_by(PA, Station, Year) %>% 
+  summarise(Annual_Rainfall = 
+              sum(TotalRainfall, na.rm = TRUE)) %>%
+  ungroup()
+
+glimpse(rain_map)
+```
+
+```{r}
+mpsztemp <- left_join(mpsz, rain_map,
+                         by = c("PLN_AREA_N" = "PA"))
+glimpse(mpsztemp)
+```
+
+Let's plot the annual mean temperature distribution across Singapore.
+
+```{r}
+tm_shape(mpsztemp) +
+  tm_polygons(col = "Annual_Rainfall", 
+              palette = "Blues", 
+              style = "jenks") +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+::: callout-note
+It seems like the western area of Singapore has more rainfall.
+:::
+
+## 4.2 Rainfall Time Series
+
+### 4.2.1 Overall - Rainfall Time Series
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+gg <- ggplot(rainfall, aes(x = Date, y = TotalRainfall, 
+                         color = factor(Year))) +
+    geom_line(linewidth = 0.1) +
+    geom_point(aes(text = paste0("Month:", Month, 
+                                "<br>Total Rainfall:", TotalRainfall, "mm"))) +
+    labs(x = "Year", y = "Monthly Total Rainfall (mm)", color = "Year",
+         title = "Trend of Monthly Total Rainfall from 1981 to 2023", 
+         caption = "Data from Meteorological Service Singapore website") +
+    geom_smooth(method = "lm", 
+                se = FALSE, color = "black") +
+    theme_minimal() 
+
+ggplotly(gg, tooltip = "text") %>%
+    layout(title = list(text = 
+                        paste0(gg$labels$title, "<br>", "<sup>", 
+                               gg$labels$subtitle, "</sup>"),
+                        font = list(weight = "bold")),
+           showlegend = FALSE,
+    annotations = list(text = gg$labels$caption,
+                      xref = "paper", yref = "paper",
+                      x = 1000, y = 24,
+                      xanchor = "right", yanchor = "top",
+                      showarrow = FALSE)) 
+
+```
+
+::: callout-note
+We can observe that the trend of rainfall is constant horizontal line, means the rainfall over the years are similar.
+:::
+
+### 4.2.2 Rainfall Time Series by station
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+rain_station <- rainfall %>%
+  group_by(Station, Year) %>%
+  summarise(rain = sum(TotalRainfall, na.rm = TRUE)) %>%
+  ungroup()
+
+rain_station$mean_tooltip <- c(paste0(
+  "Year: ", rain_station$Year,
+  "\n Station: ", rain_station$Station,
+  "\n Total Rainfall: ", rain_station$rain, "mm"))
+
+line <- ggplot(data = rain_station,
+               aes(x = Year,
+                   y = rain,
+                   group = Station,
+                   color = Station,
+                   data_id = Station)) +
+  geom_line_interactive(size = 1.2,
+                        alpha = 0.4) +
+  geom_point_interactive(aes(tooltip = rain_station$mean_tooltip),
+                         fill = "white",
+                         size = 1,
+                         stroke = 1,
+                         shape = 21) +
+  theme_classic() +
+  ylab("Annual Total Rainfall(mm)") +
+  xlab("Year") +
+  ggtitle("Annual Total Rainfall") +
+  theme(plot.title = element_text(size = 10),
+        plot.subtitle = element_text(size = 8)) 
+
+girafe(ggobj = line, 
+       width_svg = 8,
+       height_svg = 6 * 0.618,
+       options = list(
+         opts_hover(css = "stroke-width: 2.5; opacity: 1;"),
+         opts_hover_inv(css = "stroke-width: 1;opacity:0.6;")))
+
+```
+
+## 4.3 Confidence Interval of Total Rainfall
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+rain_yr_error <- rainfall %>%
+  group_by(Year) %>%
+  summarise(n = n(), rain = sum(TotalRainfall, na.rm = TRUE), 
+            sd = sd(TotalRainfall, na.rm = TRUE)) %>%
+  mutate(se = sd/sqrt(n-1)) %>% 
+  ungroup()
+
+model <- lm(rain ~ Year, rain_yr_error)
+y_intercept = coef(model)[1] 
+slope_coeff = coef(model)[2]
+adjust_yintercept = slope_coeff * 1982 + y_intercept
+
+gg <- ggplot(rain_yr_error) +
+       geom_errorbar(aes(x = factor(Year), ymin = rain - 2.58 * se, 
+                      ymax = rain + 2.58*se), 
+                      width=0.2, colour="black", 
+                      alpha=0.9, size=0.5) +
+       geom_point(aes(x = factor(Year), y = rain, 
+             text = paste0("Year:", `Year`, 
+                          "<br>Total Rainfall:", round(rain, digits = 2),
+                          "<br>95% CI:[", 
+                          round((rain - 2.58 * se), digits = 2), ",",
+                          round((rain + 2.58 * se), digits = 2),"]")),
+             stat="identity", color="darkred", 
+             size = 1.5, alpha = 1) +
+       geom_abline(slope = round(slope_coeff, 4), 
+                   intercept = adjust_yintercept,
+                   untf = TRUE,
+                   color = "blue",
+                   linetype = "dashed")+
+       geom_text(aes(x = 11, y = 27.8, colour = "blue",
+                     label = paste0("Rainfall=", 
+                                    round(slope_coeff, 4), "* Year ",
+                                    round(y_intercept, 4)))) +
+       labs (x = "Year", y = "Annual mean temperatures (°C)",
+             title = "99% Confidence interval of annual total rainfall by year",
+             subtitle = "From 1982 to 2023",
+             caption = "Data from Meteorological Service Singapore website") +
+       theme_minimal() + 
+       theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1),
+             plot.title = element_text(face = "bold", size = 12))
+
+ggplotly(gg, tooltip = "text") %>%
+    layout(title = list(text = 
+                        paste0(gg$labels$title, "<br>", "<sup>", 
+                               gg$labels$subtitle, "</sup>"),
+                        font = list(weight = "bold")),
+           showlegend = FALSE)
+```
+
+::: callout-note
+We can observe that the total rainfall over the years have increased.
+:::
+
+## 4.4 Rainfall across the months
+
+### 4.4.1 Box plot across the months
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+gg <- ggplot(rainfall, 
+       aes(x = factor(Month, levels = month.abb), y = TotalRainfall)) +
+  geom_violin(color = "navy", fill = "lightblue") +
+  geom_hline(data = rainfall, 
+             aes(yintercept = mean(TotalRainfall, na.rm = TRUE)),
+             linetype = "dashed", size = 1, colour = "brown") +
+  geom_text(aes(x = 4.5, y = 27.3, 
+                 label = paste0("Total Rainfall : ", 
+                                round(sum(TotalRainfall,na.rm = TRUE),2), "mm")), 
+            colour = "brown") +
+  stat_summary(fun = mean, geom = "point", 
+               shape = 20, size = 3, color = "orange",
+               aes(text = paste0("Total Rainfall : ",
+                                 round(after_stat(y), 2), "mm"))) +
+  theme_minimal() +
+  labs(title = "Monthly Total Rainfall across each month from 1981 to 2023",
+       subtitle = "November to February are cooler as compared to the rest of the year",
+        y = "Total Rainfall (mm)",
+        x = "Month",
+        caption = "Data from Meteorological Service Singapore website")
+
+ggplotly(gg, tooltip = "text") %>%
+    layout(title = list(text =
+                        paste0(gg$labels$title, "<br>", "<sup>",
+                               gg$labels$subtitle, "</sup>"),
+                        font = list(weight = "bold")))
+```
+
+::: callout-note
+We can observe that we have more rain in April, November and December.
+:::
+
+### 4.4.2 Heatmap across the months
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+rain <- rainfall %>% 
+        group_by(Year, Month) %>% 
+        summarise(TRain = sum(TotalRainfall, na.rm = TRUE))
+
+gg <- ggplot(rain, aes(factor(Month, levels = month.abb), factor(Year), 
+                          fill = TRain)) + 
+    geom_tile(color = "white",
+              aes(text = paste0(Year, "-", Month,
+                                "<br>Rainfall:", round(TRain, 2), "°C"))) + 
+    theme_minimal() + 
+    scale_fill_gradient(name = "Rainfall",
+                        low = "sky blue", 
+                        high = "dark blue") +
+    labs(x = NULL, y = NULL, 
+         title = "Total rainfall by year and month")
+
+ggplotly(gg, tooltip = "text")
+
+```
+
+::: callout-note
+We can observe that there are more rainfall in the recent years.
+:::

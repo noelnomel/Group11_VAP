@@ -16,7 +16,9 @@ pacman::p_load(tidyverse, readr, psych, st, stars, tmap, sf,
 ```
 
 # 2 Load the prepared files
+
 Let's load the RDS files after data preparation.
+
 ```{r}
 temperature <- readRDS("data/temperature.rds")
 describe(temperature)
@@ -29,6 +31,7 @@ mpsz <- st_read(dsn = "data/geospatial", layer = "MPSZ-2019") %>%
   st_transform(crs=3414)
 glimpse(mpsz)
 ```
+
 Let's take a look at the planning areas for the 5 regions.
 
 ```{r}
@@ -99,6 +102,7 @@ mpsztemp <- left_join(mpsz, temp_map,
                          by = c("PLN_AREA_N" = "PA"))
 glimpse(mpsztemp)
 ```
+
 Let's plot the annual mean temperature distribution across Singapore.
 
 ```{r}
@@ -123,7 +127,6 @@ tm_shape(mpsztemp) +
   tm_view(set.zoom.limits = c(11,12))
 ```
 
-
 ```{r}
 tm_shape(mpsztemp) +
   tm_polygons(col = "Annual_Minimum_Temperature", 
@@ -132,9 +135,9 @@ tm_shape(mpsztemp) +
   tm_view(set.zoom.limits = c(11,12))
 ```
 
-## 4.2 Temperature Time Series 
+## 4.2 Temperature Time Series
 
-### 4.2.1 Overall - Temperature Time Series 
+### 4.2.1 Overall - Temperature Time Series
 
 ```{r}
 #| code-fold: true 
@@ -145,7 +148,7 @@ gg <- ggplot(temperature, aes(x = Date, y = MeanTemp,
     geom_point(aes(text = paste0("Month:", Month, 
                                 "<br>MeanTemp:", MeanTemp, "ºC"))) +
     labs(x = "Year", y = "Monthly mean temperature (ºC)", color = "Year",
-         title = "Trend of Monthly Mean Temperature at Changi Station from 1981 to 2023", 
+         title = "Trend of Monthly Mean Temperature from 1981 to 2023", 
          subtitle = "Gentle trend line sloping upwards from 1981",
          caption = "Data from Meteorological Service Singapore website") +
     geom_smooth(method = "lm", 
@@ -169,7 +172,8 @@ ggplotly(gg, tooltip = "text") %>%
 ### 4.2.2 Temperature Time Series by station
 
 ```{r}
-
+#| code-fold: true 
+#| code-summary: "Show the code" 
 Temp_station <- temperature %>%
   group_by(Station, Year) %>%
   summarise(Temp = mean(MeanTemp, na.rm = TRUE)) %>%
@@ -209,7 +213,7 @@ girafe(ggobj = line,
 
 ```
 
-## 4.3 COnfidence Interval of Mean Temperature
+## 4.3 Confidence Interval of Mean Temperature
 
 ```{r}
 #| code-fold: true 
@@ -263,6 +267,7 @@ ggplotly(gg, tooltip = "text") %>%
                         font = list(weight = "bold")),
            showlegend = FALSE)
 ```
+
 ::: callout-note
 We can observe that the mean temperature over the years have increased and the confidence intervals have narrowed.
 :::
@@ -270,6 +275,7 @@ We can observe that the mean temperature over the years have increased and the c
 ## 4.4 Temperature across the months
 
 ### 4.4.1 Box plot across the months
+
 ```{r}
 #| code-fold: true 
 #| code-summary: "Show the code" 
@@ -287,7 +293,7 @@ gg <- ggplot(temperature,
                shape = 20, size = 3, color = "orange",
                aes(text = paste0("Mean : ", round(after_stat(y), 2), "°C"))) +
   theme_minimal() +
-  labs(title = "Daily mean temperature across each month from 1981 to 2023",
+  labs(title = "Monthly mean temperature across each month from 1981 to 2023",
        subtitle = "November to February are cooler as compared to the rest of the year",
         y = "Daily mean Temperatures (°C)",
         x = "Month",
