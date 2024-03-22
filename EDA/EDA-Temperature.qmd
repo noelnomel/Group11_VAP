@@ -1,0 +1,335 @@
+---
+title: "Exploratory Data Analysis - Temperature"
+execute: 
+  echo: true # all code chunks will appear
+  eval: true # all code chunks will run live
+  warning: false # do not display warning message
+  freeze: true # do not render if no changes made
+  message: false
+---
+
+# 1 Import Packages
+
+```{r}
+pacman::p_load(tidyverse, readr, psych, st, stars, tmap, sf,
+               ggstatsplot, plotly, ggplot2, ggdist, dplyr, ggiraph)
+```
+
+# 2 Load the prepared files
+Let's load the RDS files after data preparation.
+```{r}
+temperature <- readRDS("data/temperature.rds")
+describe(temperature)
+```
+
+# 3 Map of Singapore
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial", layer = "MPSZ-2019") %>% 
+  st_transform(crs=3414)
+glimpse(mpsz)
+```
+Let's take a look at the planning areas for the 5 regions.
+
+```{r}
+tmap_mode("view")
+
+tm_shape(mpsz) +
+  tm_polygons(col = "REGION_N", palette = "Set2")+
+  tm_layout(main.title = "Planning Area",
+            main.title.position = "left",
+            main.title.size = 1,
+            legend.show = FALSE,
+            frame = FALSE) +
+  tmap_options(check.and.fix = TRUE) +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+# 4 Temperature analysis
+
+## 4.1 Analyse temperature using maps
+
+Let's map the station to the planning area (PA).
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+station_to_PA <- c(
+  "Admiralty" = "WOODLANDS",
+  "Ang Mo Kio" = "ANG MO KIO",
+  "Boon Lay (East)" = "BOON LAY",
+  "Changi" = "CHANGI",
+  "Choa Chu Kang (South)" = "CHOA CHU KANG",
+  "Clementi" = "CLEMENTI",
+  "East Coast Parkway" = "BEDOK",
+  "Jurong (West)" = "JURONG WEST",
+  "Khatib" = "YISHUN",
+  "Marina Barrage" = "DOWNTOWN CORE",
+  "Newton" = "NEWTON",
+  "Pasir Panjang" = "PASIR PANJANG",
+  "Paya Lebar" = "PAYA LEBAR",
+  "Seletar" = "SELETAR",
+  "Sembawang" = "SEMBAWANG",
+  "Tai Seng" = "HOUGANG",
+  "Tengah" = "TENGAH",
+  "Tuas South" = "TUAS"
+)
+
+temperature$PA <- station_to_PA[temperature$Station]
+temperature <- temperature[, c("PA", setdiff(names(temperature), "PA"))]
+head(temperature)
+```
+
+```{r}
+temp_map <- temperature %>% 
+  group_by(PA, Station, Year) %>% 
+  summarise(Annual_Mean_Temperature = 
+              mean(MeanTemp, na.rm = TRUE),
+            Annual_Maximum_Temperature = 
+              max(MaxTemp, na.rm = TRUE),
+            Annual_Minimum_Temperature = 
+              min(MinTemp, na.rm = TRUE)) %>%
+  ungroup()
+
+glimpse(temp_map)
+```
+
+```{r}
+mpsztemp <- left_join(mpsz, temp_map,
+                         by = c("PLN_AREA_N" = "PA"))
+glimpse(mpsztemp)
+```
+Let's plot the annual mean temperature distribution across Singapore.
+
+```{r}
+tm_shape(mpsztemp) +
+  tm_polygons(col = "Annual_Mean_Temperature", 
+              palette = "Blues", 
+              style = "jenks") +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+::: callout-note
+It seems like the northern area of Singapore has a cooler mean temperature.
+:::
+
+Let's compare the maximum and minimum temperatures.
+
+```{r}
+tm_shape(mpsztemp) +
+  tm_polygons(col = "Annual_Maximum_Temperature", 
+              palette = "Blues", 
+              style = "jenks") +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+
+```{r}
+tm_shape(mpsztemp) +
+  tm_polygons(col = "Annual_Minimum_Temperature", 
+              palette = "Blues", 
+              style = "jenks") +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+## 4.2 Temperature Time Series 
+
+### 4.2.1 Overall - Temperature Time Series 
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+gg <- ggplot(temperature, aes(x = Date, y = MeanTemp, 
+                         color = factor(Year))) +
+    geom_line(linewidth = 0.1) +
+    geom_point(aes(text = paste0("Month:", Month, 
+                                "<br>MeanTemp:", MeanTemp, "ºC"))) +
+    labs(x = "Year", y = "Monthly mean temperature (ºC)", color = "Year",
+         title = "Trend of Monthly Mean Temperature at Changi Station from 1981 to 2023", 
+         subtitle = "Gentle trend line sloping upwards from 1981",
+         caption = "Data from Meteorological Service Singapore website") +
+    geom_smooth(method = "lm", 
+                se = FALSE, color = "black") +
+    theme_minimal() 
+
+ggplotly(gg, tooltip = "text") %>%
+    layout(title = list(text = 
+                        paste0(gg$labels$title, "<br>", "<sup>", 
+                               gg$labels$subtitle, "</sup>"),
+                        font = list(weight = "bold")),
+           showlegend = FALSE,
+    annotations = list(text = gg$labels$caption,
+                      xref = "paper", yref = "paper",
+                      x = 1000, y = 24,
+                      xanchor = "right", yanchor = "top",
+                      showarrow = FALSE)) 
+
+```
+
+### 4.2.2 Temperature Time Series by station
+
+```{r}
+
+Temp_station <- temperature %>%
+  group_by(Station, Year) %>%
+  summarise(Temp = mean(MeanTemp, na.rm = TRUE)) %>%
+  ungroup()
+
+Temp_station$mean_tooltip <- c(paste0(
+  "Year: ", Temp_station$Year,
+  "\n Station: ", Temp_station$Station,
+  "\n Mean Temp: ", Temp_station$Temp, "°C"))
+
+line <- ggplot(data = Temp_station,
+               aes(x = Year,
+                   y = Temp,
+                   group = Station,
+                   color = Station,
+                   data_id = Station)) +
+  geom_line_interactive(size = 1.2,
+                        alpha = 0.4) +
+  geom_point_interactive(aes(tooltip = Temp_station$mean_tooltip),
+                         fill = "white",
+                         size = 1,
+                         stroke = 1,
+                         shape = 21) +
+  theme_classic() +
+  ylab("Annual Mean Temperature (°C)") +
+  xlab("Year") +
+  ggtitle("Annual Average of Mean Temperatures") +
+  theme(plot.title = element_text(size = 10),
+        plot.subtitle = element_text(size = 8)) 
+
+girafe(ggobj = line, 
+       width_svg = 8,
+       height_svg = 6 * 0.618,
+       options = list(
+         opts_hover(css = "stroke-width: 2.5; opacity: 1;"),
+         opts_hover_inv(css = "stroke-width: 1;opacity:0.6;")))
+
+```
+
+## 4.3 COnfidence Interval of Mean Temperature
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+Temp_yr_error <- temperature %>%
+  group_by(Year) %>%
+  summarise(n = n(), Temp = mean(MeanTemp, na.rm = TRUE), 
+            sd = sd(MeanTemp, na.rm = TRUE)) %>%
+  mutate(se = sd/sqrt(n-1)) %>% 
+  ungroup()
+
+model <- lm(Temp ~ Year, Temp_yr_error)
+y_intercept = coef(model)[1] 
+slope_coeff = coef(model)[2]
+adjust_yintercept = slope_coeff * 1982 + y_intercept
+
+gg <- ggplot(Temp_yr_error) +
+       geom_errorbar(aes(x = factor(Year), ymin = Temp - 2.58 * se, 
+                      ymax = Temp+2.58*se), 
+                      width=0.2, colour="black", 
+                      alpha=0.9, size=0.5) +
+       geom_point(aes(x = factor(Year), y = Temp, 
+             text = paste0("Year:", `Year`, 
+                          "<br>Avg. Temp:", round(Temp, digits = 2),
+                          "<br>95% CI:[", 
+                          round((Temp - 2.58 * se), digits = 2), ",",
+                          round((Temp + 2.58 * se), digits = 2),"]")),
+             stat="identity", color="darkred", 
+             size = 1.5, alpha = 1) +
+       geom_abline(slope = round(slope_coeff, 4), 
+                   intercept = adjust_yintercept,
+                   untf = TRUE,
+                   color = "blue",
+                   linetype = "dashed")+
+       geom_text(aes(x = 11, y = 27.8, colour = "blue",
+                     label = paste0("Temp=", 
+                                    round(slope_coeff, 4), "* Year ",
+                                    round(y_intercept, 4)))) +
+       labs (x = "Year", y = "Annual mean temperatures (°C)",
+             title = "99% Confidence interval of annual mean temperatures by year",
+             subtitle = "From 1982 to 2023",
+             caption = "Data from Meteorological Service Singapore website") +
+       theme_minimal() + 
+       theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1),
+             plot.title = element_text(face = "bold", size = 12))
+
+ggplotly(gg, tooltip = "text") %>%
+    layout(title = list(text = 
+                        paste0(gg$labels$title, "<br>", "<sup>", 
+                               gg$labels$subtitle, "</sup>"),
+                        font = list(weight = "bold")),
+           showlegend = FALSE)
+```
+::: callout-note
+We can observe that the mean temperature over the years have increased and the confidence intervals have narrowed.
+:::
+
+## 4.4 Temperature across the months
+
+### 4.4.1 Box plot across the months
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+gg <- ggplot(temperature, 
+       aes(x = factor(Month, levels = month.abb), y = MeanTemp)) +
+  geom_violin(color = "navy", fill = "lightblue") +
+  geom_hline(data = temperature, 
+             aes(yintercept = mean(MeanTemp, na.rm = TRUE)),
+             linetype = "dashed", size = 1, colour = "brown") +
+  geom_text(aes(x = 4.5, y = 27.3, 
+                 label = paste0("Mean : ", 
+                                round(mean(MeanTemp,na.rm = TRUE),2), "°C")), 
+            colour = "brown") +
+  stat_summary(fun = mean, geom = "point", 
+               shape = 20, size = 3, color = "orange",
+               aes(text = paste0("Mean : ", round(after_stat(y), 2), "°C"))) +
+  theme_minimal() +
+  labs(title = "Daily mean temperature across each month from 1981 to 2023",
+       subtitle = "November to February are cooler as compared to the rest of the year",
+        y = "Daily mean Temperatures (°C)",
+        x = "Month",
+        caption = "Data from Meteorological Service Singapore website")
+
+ggplotly(gg, tooltip = "text") %>%
+    layout(title = list(text =
+                        paste0(gg$labels$title, "<br>", "<sup>",
+                               gg$labels$subtitle, "</sup>"),
+                        font = list(weight = "bold")))
+```
+
+::: callout-note
+We can observe that temperature in November to February are below the average temperature.
+:::
+
+### 4.4.2 Heatmap across the months
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+Temp <- temperature %>% 
+        group_by(Year, Month) %>% 
+        summarise(MTemp = mean(MeanTemp, na.rm = TRUE))
+
+gg <- ggplot(Temp, aes(factor(Month, levels = month.abb), factor(Year), 
+                          fill = MTemp)) + 
+    geom_tile(color = "white",
+              aes(text = paste0(Year, "-", Month,
+                                "<br>Temp:", round(MTemp, 2), "°C"))) + 
+    theme_minimal() + 
+    scale_fill_gradient(name = "Temperature",
+                        low = "sky blue", 
+                        high = "dark blue") +
+    labs(x = NULL, y = NULL, 
+         title = "Mean temperatures by year and month",
+         subtitle = "Hotter in more months of 2023 as compared to the other years")
+
+ggplotly(gg, tooltip = "text")
+
+```
+
+::: callout-note
+We can observe that temperature in May and June are consistently high across the years.
+:::

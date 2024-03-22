@@ -1,7 +1,5 @@
 ---
 title: "Data Preparation"
-date: "3 March 2024"
-date-modified: "last-modified"
 execute: 
   eval: true
   echo: true
@@ -96,7 +94,6 @@ Some year's data are in the first set of variables and others are in the second 
 ```{r}
 data <- read_rds("data/data.rds")
 ```
-
 
 It will be meaningful to also analyse weather data by region in Singapore. Hence, we also searched for each weather station's region on public websites like the HDB website and data.gov.sg. Let's import the region information now.
 
