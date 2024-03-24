@@ -21,8 +21,18 @@ website:
           - text: EDA - Temperature
             href: EDA/EDA-Temperature.html
           - text: EDA - Rainfall
-            href: EDA/EDA-Rainfall.html      
-            
+            href: EDA/EDA-Rainfall.html   
+      - text: Prototype
+        menu: 
+          - text: EDA - Geospatial Analysis
+            href: Prototype/EDA-GeospatialAnalysis.html
+          - text: EDA - Time Series Analysis
+            href: Prototype/EDA-TimeSeriesAnalysis.html   
+          - text: CDA
+            href: Prototype/CDA.html
+          - text: Forecast
+            href: Prototype/Forecast.html
+      
       - text: Shiny App
         href: https://chockwankee.shinyapps.io/Group11_VAP_ShinyApp/
         
