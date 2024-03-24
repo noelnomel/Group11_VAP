@@ -1,0 +1,767 @@
+---
+title: "Prototype - Time Series Analysis"
+execute: 
+  echo: true # all code chunks will appear
+  eval: true # all code chunks will run live
+  warning: false # do not display warning message
+  freeze: true # do not render if no changes made
+  message: false
+---
+
+# 1. Load Packages
+
+```{r}
+pacman::p_load(tidyverse, ggiraph, reshape, ggthemes, 
+               gganimate, plotly, scales, ggHoriPlot, ggrepel,
+               CGPfunctions, ggTimeSeries, datagovsgR, neaSG)
+```
+
+# 2. Import Data
+
+```{r}
+Temp_YM <- readRDS("data/temperature.rds")
+Rainfall_YM <- readRDS("data/rainfall.rds")
+```
+
+# 3. Overview
+
+# 3.1 Dashboard
+
+## Prototype
+
+![](images/dashboard.gif)
+
+## Total Stations
+
+```{r}
+station_count <- Temp_YM %>%
+  summarise(Station_Count = n_distinct(Station))
+station_count
+```
+
+## Mean Temperature
+
+```{r}
+mean_temperature <- Temp_YM %>%
+  summarise(Mean_Temperature = round(mean(MeanTemp, na.rm = TRUE), 1))
+mean_temperature
+```
+
+# Total Rainfall
+
+```{r}
+mean_totalrainfall <- Rainfall_YM %>%
+  summarise(Mean_Total_Rainfall = round(mean(TotalRainfall, na.rm = TRUE), 1))
+mean_totalrainfall
+```
+
+# 3.2 Live Weather Forecast
+
+## Weather Forecast
+
+This functions calls upon the weather forecast API from data.gov.sg and returns a data frame con- taining different metrics of the forecast. 2-hour, 24-hour and 4-day forecasts are availible. This data provided by the API is updated half-hourly.
+
+```{r}
+current_time <- Sys.time()
+formatted_date <- format(current_time, "%Y-%m-%d")
+formatted_time <- format(current_time, "%H:%M:%S")
+formatted_datetime <- paste(formatted_date, formatted_time, sep = "T")
+```
+
+```{r}
+weather_forecast(formatted_datetime)
+```
+
+## Air Temperature
+
+```{r}
+get_airtemp(formatted_date, formatted_date)
+```
+
+```{r}
+latest_airtemp <- head(get_airtemp(formatted_date, formatted_date), n = 1)
+column_names <- paste0("readings.value.", 1:12)
+values <- sapply(column_names, function(col) latest_airtemp[[col]])
+average_value <- mean(values, na.rm = TRUE)
+print(average_value)
+```
+
+## Ultra-violet Index
+
+This functions calls upon the UVI API from data.gov.sg and returns a data frame of the different measures of the UVI across Singapore and returns the closest UVI value presently and for the past few hours. This data provided by the API is updated hourly.
+
+```{r}
+uvi(formatted_datetime)
+```
+
+```{r}
+# Display only the latest timestamp
+# Retrieve the UV index for the latest timestamp
+latest_uvi <- head(uvi(formatted_datetime), n = 1)
+print(latest_uvi$value)
+```
+
+# 3.3 Animation
+
+## Temperature
+
+```{r}
+MeanTemp_Year <- Temp_YM %>% 
+  group_by(Year) %>% 
+  summarise(MeanTemp_Year = round(mean(MeanTemp, na.rm = TRUE), 1))
+
+Temp_YM <- left_join(Temp_YM, MeanTemp_Year, by = c("Year"))
+
+glimpse(Temp_YM)
+```
+
+```{r}
+ggplot(Temp_YM, aes(x = Month, y = MeanTemp)) +
+  geom_point(aes(color = MeanTemp), alpha = 0.5, size = 4, show.legend = FALSE) +
+  scale_color_gradient(low = "darkorange", high = "darkred") +
+  geom_boxplot(aes(y = MeanTemp_Year), width = 0.8, color = "darkgoldenrod1") +
+  scale_size(range = c(2, 12)) +
+  labs(title = 'Mean Temperature, 1986-2023 \nYear: {frame_time}', 
+       x = 'Month', 
+       y = 'Mean Temperature (°C)') +
+  transition_time(as.integer(Year)) + 
+  ease_aes('linear') +
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  guides(color = guide_legend(title = "Average Temperature", override.aes = list(color = "grey", linetype = "dashed"))) +
+  theme_hc()
+```
+
+## Rainfall
+
+```{r}
+TotalRainfall_Year <- Rainfall_YM %>% 
+  group_by(Year) %>% 
+  summarise(MeanRainfall_Year = round(mean(TotalRainfall, na.rm = TRUE), 1))
+Rainfall_YM <- left_join(Rainfall_YM, TotalRainfall_Year, by = c("Year"))
+glimpse(Rainfall_YM)
+```
+
+```{r}
+ggplot(Rainfall_YM, aes(x = Month, y = TotalRainfall)) +
+  geom_point(aes(color = TotalRainfall), shape = 17, alpha = 0.5, size = 4, show.legend = FALSE) +
+  scale_color_gradient(low = "lightblue", high = "darkblue") +
+  geom_boxplot(aes(y = MeanRainfall_Year), width = 0.8, color = "cornflowerblue") +
+  scale_size(range = c(2, 12)) +
+  labs(title = 'Total Rainfall, 1986-2023 \nYear: {frame_time}', 
+       x = 'Month', 
+       y = 'Total Rainfall (mm)') +
+  transition_time(as.integer(Year)) + 
+  ease_aes('linear') +
+  theme(legend.position = "right",
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  guides(color = guide_legend(title = "Total Rainfall", override.aes = list(color = "grey", linetype = "dashed"))) +
+  theme_hc()
+```
+
+# 4. Time Series Analysis
+
+## Prototype
+
+### Temperature
+
+![](images/time_temp.png)
+
+### Rainfall
+
+![](images/time_rainfall.png)
+
+## 4.1 Cycle Plot
+
+```{r}
+# Selecting 5 years
+selection <- c(1990, 1995, 2000, 2005, 2010, 2015, 2020)
+
+# Filtering the dataframe for the selected years
+cycle_input <- Temp_YM %>%
+  filter(Year %in% selection)
+
+# Define darker pastel colors
+palette <- c("gold1", "orange2", "darkorange", "darkorange1", "tomato1", "tomato3", "tomato4")
+
+# Plot with darker pastel colors
+ggplot(data = cycle_input) +
+  geom_hline(data = cycle_input,
+             aes(yintercept = `MeanTemp_Year`),
+             color = "black",
+             alpha = 1.0,
+             size = 0.4) +
+  geom_line(aes(x = Month,
+                y = MeanTemp,
+                group = Year,
+                color = as.factor(Year),
+                alpha = 0.6)) +
+  geom_text(data = cycle_input,
+            aes(x = 1, y = MeanTemp_Year - 0.05, label = paste0("Mean: ", sprintf("%.1f", MeanTemp_Year))),
+            hjust = -0.1, vjust = 0.5, color = "black", size = 3.5) +
+  facet_grid(~Year) + 
+  labs(x = "Month",
+       y = "Mean Temperature") +
+  ggtitle("Temperature Change over 30 years") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title = element_text(size = 10),
+        title = element_text(size =12),
+        axis.text.y = element_text(size = 8),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  scale_color_manual(values = palette)
+```
+
+```{r}
+# Filtering the dataframe for the selected years
+cycle_input <- Rainfall_YM %>%
+  filter(Year %in% selection)
+
+# Define darker pastel colors
+palette <- c("steelblue1", "dodgerblue", "dodgerblue3", "royalblue3", "blue3", "blue4", "darkblue")
+
+# Plot with darker pastel colors
+ggplot(data = cycle_input) +
+  geom_hline(data = cycle_input,
+             aes(yintercept = `MeanRainfall_Year`),
+             color = "black",
+             alpha = 1.0,
+             size = 0.4) +
+  geom_line(aes(x = Month,
+                y = TotalRainfall,
+                group = Year,
+                color = as.factor(Year),
+                alpha = 0.6)) +
+  geom_text(data = cycle_input,
+            aes(x = 1, y = MeanRainfall_Year - 0.05, label = paste0("Mean: ", sprintf("%.1f", MeanRainfall_Year))),
+            hjust = -0.1, vjust = 0.5, color = "black", size = 3.5) +
+  facet_grid(~Year) + 
+  labs(x = "Month",
+       y = "Total Rainfall") +
+  ggtitle("Rainfall Change over 30 years") +
+  theme_bw() +
+  theme(legend.position = "none",
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title = element_text(size = 10),
+        title = element_text(size =12),
+        axis.text.y = element_text(size = 8),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  scale_color_manual(values = palette)
+```
+
+### Transformation to Shiny App
+
+UI
+
+```{r}
+#| eval: false
+UI(fluidPage(
+  
+  titlePanel("Temperature and Rainfall Analysis"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("data", "Select Data:",
+                  choices = c("Temperature", "Rainfall")),
+      sliderInput("period", "Select Period:",
+                  min = 1980, max = 2023, value = c(1990, 2020)),
+      selectInput("region", "Select Region:",
+                  choices = c("Region A", "Region B", "Region C")),
+      selectInput("station", "Select Station:",
+                  choices = c("Station 1", "Station 2", "Station 3"))
+    ),
+    mainPanel(
+      plotOutput("plot")
+    )
+  )
+))
+```
+
+Server
+
+```{r}
+#| eval: false
+
+Server(function(input, output) {
+  
+  output$plot <- renderPlot({
+    # Filter data based on user inputs
+    filtered_data <- filter_data(input$data, input$period[1], input$period[2],
+                                 input$region, input$station)
+    
+    # Plotting based on filtered data
+    ggplot(filtered_data) +
+      geom_line(aes(x = Month, y = MeanTemp, group = Year, color = as.factor(Year)),
+                alpha = 0.6) +
+      labs(x = "Month", y = ifelse(input$data == "Temperature", "Mean Temperature", "Total Rainfall")) +
+      ggtitle(ifelse(input$data == "Temperature", "Temperature Change over Time", "Rainfall over Time")) +
+      theme_minimal()
+  })
+  
+  # Function to filter data based on user inputs
+  filter_data <- function(data_type, start_year, end_year, region, station) {
+    # Your data filtering logic here based on user inputs
+    # For demonstration, let's assume you have a dataframe called "data"
+    # with columns: Month, Year, MeanTemp, TotalRainfall, Region, Station
+    
+    filtered_data <- data %>%
+      filter(Year >= start_year, Year <= end_year,
+             Region == region, Station == station)
+    
+    if (data_type == "Temperature") {
+      return(filtered_data %>% select(Month, Year, MeanTemp))
+    } else {
+      return(filtered_data %>% select(Month, Year, TotalRainfall))
+    }
+  }
+  
+})
+```
+
+## 4.2 Slope Graph
+
+```{r}
+Temp_YM %>% 
+  mutate(Year = factor(Year), 
+         Station = factor(Station)) %>%
+  filter(Year %in% c(2017, 2023)) %>%
+  newggslopegraph(Year, MeanTemp_Year, Station,
+                Title = "Temperature",
+                SubTitle = "1983-2023",
+                Caption = "Taught by: Dr. Kam Tin Seong")
+```
+
+```{r}
+Temp_slope <- Temp_YM %>%
+  select(Station, Year, MeanTemp_Year) %>%
+  distinct()
+
+Temp_slope <- Temp_slope %>%
+  mutate(Year = factor(Year))
+
+Temp_slope_filtered <- Temp_slope %>%
+  filter(Year %in% c(2017, 2023))
+
+slope_plot <- newggslopegraph(data = Temp_slope_filtered,
+                              Year, MeanTemp_Year, Station,
+                              Title = "Temperature",
+                              SubTitle = "2017-2023",
+                              Caption = "Taught by: Dr. Kam Tin Seong")
+
+slope_plot + geom_text_repel(aes(label = Station), size = 3, box.padding = 0.5, max.overlaps = Inf)
+
+```
+
+```{r}
+Rainfall_YM %>% 
+  mutate(Year = factor(Year), 
+         Station = factor(Station)) %>%
+  filter(Year %in% c(2017, 2023)) %>%
+  newggslopegraph(Year, MeanRainfall_Year, Station,
+                  Title = "Rainfall",
+                  SubTitle = "1983-2023",
+                  Caption = "Taught by: Dr. Kam Tin Seong")
+```
+
+```{r}
+Rainfall_slope <- Rainfall_YM %>%
+  select(Station, Year, MeanRainfall_Year) %>%
+  distinct()
+
+Rainfall_slope <- Rainfall_slope %>%
+  mutate(Year = factor(Year))
+
+Rainfall_slope_filtered <- Rainfall_slope %>%
+  filter(Year %in% c(2017, 2023))
+
+slope_plot <- newggslopegraph(data = Rainfall_slope_filtered,
+                              Year, MeanRainfall_Year, Station,
+                              Title = "Rainfall",
+                              SubTitle = "2017-2023",
+                              Caption = "Taught by: Dr. Kam Tin Seong")
+
+slope_plot + geom_text_repel(aes(label = Station), size = 3, box.padding = 0.5, max.overlaps = Inf)
+```
+
+## 4.3 Horizon Graph
+
+```{r}
+ggplot(Temp_YM) +
+  geom_horizon(aes(x = Date, y = MeanTemp),
+               origin = "midpoint",
+               horizonscale = 6) +
+  facet_grid(`Station`~.) +
+  theme_few() +
+  scale_fill_hcl(palette = 'RdBu') +
+  theme(panel.spacing.y=unit(0, "lines"), strip.text.y = element_text(
+    size = 5, angle = 0, hjust = 0),
+    legend.position = 'none',
+    axis.text.y = element_blank(),
+    axis.text.x = element_text(size=7),
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.border = element_blank()) +
+  ggtitle('Temperature')
+```
+
+```{r}
+# Filter data for years 2010 to 2023
+Temp_YM_filtered <- Temp_YM %>%
+  filter(Year >= 2010 & Year <= 2023)
+
+# Plot the filtered data
+ggplot(Temp_YM_filtered) +
+  geom_horizon(aes(x = Date, y = MeanTemp),
+               origin = "midpoint",
+               horizonscale = 6) +
+  facet_grid(`Station`~.) +
+  theme_few() +
+  scale_fill_hcl(palette = 'RdBu') +
+  theme(panel.spacing.y = unit(0, "lines"),
+        strip.text.y = element_text(size = 5, angle = 0, hjust = 0),
+        legend.position = 'none',
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.border = element_blank()) +
+  ggtitle('Temperature, 2010-2023')
+```
+
+```{r}
+# Filter data for years 2010 to 2023
+Temp_YM_filtered <- Temp_YM %>%
+  filter(Year >= 2010 & Year <= 2023)
+
+# Plot the filtered data
+ggplot(Temp_YM_filtered) +
+  geom_horizon(aes(x = Date, y = MeanTemp),
+               origin = "midpoint",
+               horizonscale = 6) +
+  facet_grid(`Region`~.) +
+  theme_few() +
+  scale_fill_hcl(palette = 'RdBu') +
+  theme(panel.spacing.y = unit(0, "lines"),
+        strip.text.y = element_text(size = 5, angle = 0, hjust = 0),
+        legend.position = 'none',
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.border = element_blank()) +
+  ggtitle('Temperature, 2010-2023')
+```
+
+```{r}
+ggplot(Rainfall_YM) +
+  geom_horizon(aes(x = Date, y = TotalRainfall),
+               origin = "midpoint",
+               horizonscale = 6) +
+  facet_grid(`Station`~.) +
+  theme_few() +
+  scale_fill_hcl(palette = 'RdBu') +
+  theme(panel.spacing.y=unit(0, "lines"), strip.text.y = element_text(
+    size = 5, angle = 0, hjust = 0),
+    legend.position = 'none',
+    axis.text.y = element_blank(),
+    axis.text.x = element_text(size=7),
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    panel.border = element_blank()) +
+  ggtitle('Rainfall')
+```
+
+```{r}
+# Filter data for years 2010 to 2023
+Rainfall_YM_filtered <- Rainfall_YM %>%
+  filter(Year >= 2010 & Year <= 2023)
+
+# Plot the filtered data
+ggplot(Rainfall_YM_filtered) +
+  geom_horizon(aes(x = Date, y = TotalRainfall),
+               origin = "midpoint",
+               horizonscale = 6) +
+  facet_grid(`Station`~.) +
+  theme_few() +
+  scale_fill_hcl(palette = 'RdBu') +
+  theme(panel.spacing.y = unit(0, "lines"),
+        strip.text.y = element_text(size = 5, angle = 0, hjust = 0),
+        legend.position = 'right',
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.border = element_blank()) +
+  ggtitle('Rainfall, 2010-2023')
+```
+
+```{r}
+# Filter data for years 2010 to 2023
+Rainfall_YM_filtered <- Rainfall_YM %>%
+  filter(Year >= 2010 & Year <= 2023)
+
+# Plot the filtered data
+ggplot(Rainfall_YM_filtered) +
+  geom_horizon(aes(x = Date, y = TotalRainfall),
+               origin = "midpoint",
+               horizonscale = 6) +
+  facet_grid(`Region`~.) +
+  theme_few() +
+  scale_fill_hcl(palette = 'RdBu') +
+  theme(panel.spacing.y = unit(0, "lines"),
+        strip.text.y = element_text(size = 5, angle = 0, hjust = 0),
+        legend.position = 'right',
+        axis.text.y = element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.border = element_blank()) +
+  ggtitle('Rainfall, 2010-2023')
+```
+
+### Tranformation to Shiny App
+
+```{r}
+#| eval: false
+UI(fluidPage(
+  
+  titlePanel("Temperature and Rainfall Analysis"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("data", "Select Data:",
+                  choices = c("Temperature", "Rainfall")),
+      sliderInput("period", "Select Period:",
+                  min = 1980, max = 2023, value = c(2010, 2023)),
+      selectInput("region", "Select Region:",
+                  choices = c("Region A", "Region B", "Region C")),
+      selectInput("station", "Select Station:",
+                  choices = c("Station 1", "Station 2", "Station 3"))
+    ),
+    mainPanel(
+      plotOutput("plot")
+    )
+  )
+))
+```
+
+```{r}
+#| eval: false
+Server(function(input, output) {
+  
+  output$plot <- renderPlot({
+    # Filter data based on user inputs
+    filtered_data <- filter_data(input$data, input$period[1], input$period[2],
+                                 input$region, input$station)
+    
+    # Plotting based on filtered data
+    ggplot(filtered_data) +
+      geom_horizon(aes(x = Date, y = MeanTemp),
+                   origin = "midpoint",
+                   horizonscale = 6) +
+      facet_grid(Station ~ .) +
+      theme_few() +
+      scale_fill_hcl(palette = 'RdBu') +
+      theme(panel.spacing.y = unit(0, "lines"),
+            strip.text.y = element_text(size = 5, angle = 0, hjust = 0),
+            legend.position = 'none',
+            axis.text.y = element_blank(),
+            axis.text.x = element_text(size = 7),
+            axis.title.y = element_blank(),
+            axis.title.x = element_blank(),
+            axis.ticks.y = element_blank(),
+            panel.border = element_blank()) +
+      ggtitle(paste(input$data, "(", input$period[1], "-", input$period[2], ")"))
+  })
+  
+  # Function to filter data based on user inputs
+  filter_data <- function(data_type, start_year, end_year, region, station) {
+    
+    Temp_YM_filtered <- Temp_YM %>%
+      filter(Year >= start_year, Year <= end_year,
+             Region == region, Station == station)
+    
+    if (data_type == "Temperature") {
+      return(Temp_YM_filtered)
+    }
+    }
+  }
+)
+```
+
+## 4.4 Boxplot
+
+```{r}
+Temp_YM$mean_tooltip <- c(paste0("Year: ", Temp_YM$Year,
+                                   "\n Station: ", Temp_YM$Station,
+                                   "\n Mean Temp: ", Temp_YM$MeanTemp, "°C"))
+
+line <- ggplot(data = Temp_YM,
+               aes(x = Year, y = MeanTemp, group = Station, color = Station, data_id = Station)) +
+  geom_line_interactive(size = 1.2, alpha = 0.4) +
+  geom_point_interactive(aes(tooltip = Temp_YM$mean_tooltip),
+                         fill = "white", size = 1, stroke = 1, shape = 21) +
+  theme_classic() +
+  ylab("Annual Mean Temperature (°C)") +
+  xlab("Year") +
+  ggtitle("Annual Average of Mean Temperatures") +
+  theme(plot.title = element_text(size = 10),
+        plot.subtitle = element_text(size = 8)) 
+
+girafe(ggobj = line, width_svg = 8, height_svg = 6 * 0.618,
+       options = list(opts_hover(css = "stroke-width: 2.5; opacity: 1;"),
+                      opts_hover_inv(css = "stroke-width: 1;opacity:0.6;")))
+```
+
+### Tranformation to Shiny App
+
+UI
+
+```{r}
+#| eval: false
+ui <- fluidPage(
+  titlePanel("Interactive Temperature Graph"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("station", "Select Station:", choices = unique(Temp_YM$Station)),
+      sliderInput("year", "Select Year:", min = min(Temp_YM$Year), max = max(Temp_YM$Year),
+                  value = c(min(Temp_YM$Year), max(Temp_YM$Year)), step = 1)
+    ),
+    
+    mainPanel(
+      plotlyOutput("temperature_plot")
+    )
+  )
+)
+```
+
+Server
+
+```{r}
+#| eval: false
+function(input, output) {
+  filtered_data <- reactive({
+    temp_year %>%
+      filter(Station == input$station & Year >= input$year[1] & Year <= input$year[2])
+    })
+  
+  output$temperature_plot <- renderPlotly({
+    ggplot(data = filtered_data(), aes(x = Year, y = MeanTemp, group = Station, color = Station)) +
+      geom_line(size = 1.2, alpha = 0.4) +
+      geom_point(aes(text = mean_tooltip), fill = "white", size = 3, shape = 21) +
+      theme_classic() +
+      xlab("Year") +
+      ylab("Annual Mean Temperature (°C)") +
+      ggtitle("Annual Average of Mean Temperatures") +
+      theme(plot.title = element_text(size = 10), plot.subtitle = element_text(size = 8))
+    
+    ggplotly(gg, tooltip = "text")
+  })
+}
+```
+
+# 4.5 Violin Plot
+
+```{r}
+Temp_YM_filtered <- Temp_YM %>% 
+  filter(Year == "2023")
+
+plot_ly(data = Temp_YM_filtered,
+        x = ~ Station,
+        y = ~ MeanTemp,
+        line = list(width=1),
+        type = "violin",
+        spanmode = 'hard',
+        marker = list(opacity = 0.5, line = list(width = 2)),
+        box = list(visible = T),
+        points = 'all',
+        scalemode = 'count',
+        meanline = list(visible = T, color = "red"),
+        color = I('#caced8'),
+        marker = list(line = list(width = 2, color = '#caced8'), symbol = 'line-ns'))
+```
+
+### Transformation to Shiny App
+
+UI
+
+```{r}
+#| eval: false
+
+ui <- fluidPage(
+  titlePanel("Interactive Temperature Graph"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("station", "Select Station:", choices = unique(Temp_YM$Station)),
+      sliderInput("year", "Select Year:", min = min(Temp_YM$Year), max = max(Temp_YM$Year),
+                  value = c(min(Temp_YM$Year), max(Temp_YM$Year)), step = 1)
+    ),
+    
+    mainPanel(
+      plotlyOutput("temperature_plot")
+    )
+  )
+)
+```
+
+Server
+
+```{r}
+#| eval: false
+
+server <- function(input, output) {
+  
+  filtered_data <- reactive({
+    Temp_YM %>%
+      filter(Station == input$station & Year >= input$year[1] & Year <= input$year[2])
+  })
+  
+  output$temperature_plot <- renderPlotly({
+    gg <- ggplot(data = Temp_YM_filtered(), aes(x = Year, y = MeanTemp, group = Station, color = Station)) +
+      geom_line(size = 1.2, alpha = 0.4) +
+      geom_point(aes(text = mean_tooltip), fill = "white", size = 3, shape = 21) +
+      theme_classic() +
+      ylab("Annual Mean Temperature (°C)") +
+      xlab("Year") +
+      ggtitle("Annual Average of Mean Temperatures") +
+      theme(plot.title = element_text(size = 10),
+            plot.subtitle = element_text(size = 8))
+    
+    ggplotly(gg, tooltip = "text")
+  })
+}
+```
+
+# 4.6 Calendar Heatmap
+
+```{r}
+p <- ggplot(Temp_YM, aes(x = Month, y = Year, fill = MeanTemp)) + 
+  geom_tile(color = "white") + 
+  theme_tufte(base_family = "Helvetica") + 
+  scale_fill_gradient(low = "gold", high = "goldenrod3") +
+  labs(title = "Calendar Heatmap of Mean Temperature: 2013-2023", x = "Month", y = "Year", fill = "Temperature") +
+  theme_minimal() +
+  theme(axis.ticks = element_blank(), 
+       plot.title = element_text(hjust = 0.5),
+       legend.title = element_text(size = 8),
+       legend.text = element_text(size = 6) )
+
+ggplotly(p)
+```
+
+References: https://cran.r-project.org/web/packages/datagovsgR/datagovsgR.pdf

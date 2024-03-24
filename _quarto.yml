@@ -32,7 +32,10 @@ website:
             href: Prototype/CDA.html
           - text: Forecast
             href: Prototype/Forecast.html
-      
+      - text: Poster
+        href: Poster.html    
+      - text: User Guide
+        href: UserGuide.html
       - text: Shiny App
         href: https://chockwankee.shinyapps.io/Group11_VAP_ShinyApp/
         

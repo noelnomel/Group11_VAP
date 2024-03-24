@@ -1,0 +1,269 @@
+---
+title: "Prototype: Time Series Forecasting"
+execute:
+  eval: true
+  echo: true
+  #freeze: true
+  warning: false
+  message: false
+editor: visual
+---
+
+# 1 Load Packages
+
+The code below uses `p_load()` of the Pacman package to check if all the required packages are installed on the laptop. If they are, then they will be launched into the R environment.
+
+|                                    Package                                    | Description                                                                                                  |
+|:----------------------------:|------------------------------------------|
+|                  [**tidyverse**](https://www.tidyverse.org/)                  | A collection of core packages designed for data science used extensively for data preparation and wrangling. |
+| [**lubridate**](https://lubridate.tidyverse.org/reference/make_datetime.html) | For manipulating date-times.                                                                                 |
+|          [**janitor**](https://sfirke.github.io/janitor/reference/)           | For quick formatting of data frame columns.                                                                  |
+|                     [**fs**](https://github.com/r-lib/fs)                     | For retrieving a list of file names in our directory for import into R                                       |
+|    [**zoo**](https://www.rdocumentation.org/packages/zoo/versions/1.8-12)     | For irregular time series of numeric vectors/matrices and factors manipulation                               |
+|  [**visdat**](https://www.rdocumentation.org/packages/visdat/versions/0.6.0)  | For checking missing values in a dataframe                                                                   |
+
+```{r}
+pacman::p_load(readr, tidyverse, plotly, ggplot2, 
+               zoo, forecast, janitor, fs, visdat, fable, tsibble, tseries)
+```
+
+# 2 Import data
+
+```{r}
+Temperature <- readRDS("data/temperature.rds")
+Rainfall <- readRDS("data/rainfall.rds")
+```
+
+Create time series Object
+
+```{r}
+Temp <- Temperature %>%     
+   group_by(Date) %>%     
+   summarise(MeanTemp = mean(MeanTemp)) 
+temp_ts <- tsibble(date = Temp$Date,       
+                   temperature = Temp$MeanTemp) 
+```
+
+Check if the temperature time series is stationary using Augmented Dickey-Fuller Test
+
+```{r}
+adf.test(temp_ts$temperature)
+```
+
+::: callout-note
+The above test shows that our temperature time-series object is stationary (reject Null hypothesis as p-value = 0.01. This signifies that the statistical properties of time series, such as mean, variance, and covariance, remain constant over time, which is the fundamental assumption for many time series modeling techniques.It simplifies the complex dynamics within the data, making it more amenable to analysis, modeling, and forecasting.
+:::
+
+Create time series Object
+
+```{r}
+Rain <- Rainfall %>%   
+   group_by(Date) %>%       
+   summarise(TotalRain = sum(TotalRainfall))
+Rain_ts <- tsibble(date = Rain$Date,    
+                   Rain = Rain$TotalRain) 
+```
+
+Check if temperature time series is stationary using Augmented Dickey-Fuller Test
+
+```{r}
+adf.test(Rain_ts$Rain)
+```
+
+::: callout-note
+The above test shows that our rainfall time-series object is stationary (reject Null hypothesis as p-value = 0.01.
+:::
+
+```{r}
+Temp_YM <- Temperature %>% 
+   group_by(Region, Year, Month) %>% 
+   reframe(Date = Date,            
+           MeanTemp = round(mean(MeanTemp, na.rm = TRUE),1),
+           MaxTemp = round(max(MaxTemp, na.rm = TRUE),1),
+           MinTemp = round(min(MinTemp, na.rm = TRUE),1) ) %>% 
+   distinct() %>% 
+   ungroup() %>% 
+   filter(!is.na(MeanTemp))
+
+Temp_YM_AllR <- Temperature %>% 
+   group_by(Year, Month) %>% 
+   reframe(Date = Date,            
+           MeanTemp = round(mean(MeanTemp, na.rm = TRUE),1),
+           MaxTemp = round(max(MaxTemp, na.rm = TRUE),1),
+           MinTemp = round(min(MinTemp, na.rm = TRUE),1) ) %>% 
+   distinct() %>% 
+   ungroup() %>% 
+   filter(!is.na(MeanTemp))
+
+Rain_YM <- Rainfall %>% 
+   group_by(Region, Year, Month) %>% 
+   reframe(Date = Date,            
+           TotRainfall = round(sum(TotalRainfall, na.rm = TRUE),1)) %>% 
+   distinct() %>% 
+   ungroup() %>% 
+   filter(!is.na(TotRainfall))
+
+Rain_YM_AllR <- Rainfall %>% 
+   group_by(Year, Month) %>% 
+   reframe(Date = Date,            
+           TotRainfall = round(sum(TotalRainfall, na.rm = TRUE),1)) %>% 
+   distinct() %>% 
+   ungroup() %>% 
+   filter(!is.na(TotRainfall))
+
+```
+
+# 3 UI Design
+
+This section is on the UI design for forecasting of temperature and rainfall (univariate) for the next few years.
+
+![](images/clipboard-3874476906.png)
+
+From the above design, users are able to make the following selection:
+
+-   Choose the forecasting model (ARIMA, Holt-Winters or Seasonal & Trend Decomposition)
+
+-   Choose the forecast Parameter (temperature or rainfall)
+
+-   Choose the region (North, North-East, West, East, Central or All)
+
+-   Choose the number of years to forecast (range from 5 to 20 years)
+
+-   Choose the confidence level of the forecast (90%, 95% or 99%)
+
+Once the users click on the "Generate" button, the forecast plot will be shown on the right. Users can mouse over the data points to look at the forecast values.
+
+# 4 Prototype
+
+## 4.1 Create a function
+
+This function will take in all the five parameters that users set, generate the forecasting values and plot the graph using `plotly()`.
+
+```{r}
+GenerateTS <- function(variable_name, model_name, select_region,
+                       forecast_year, conf_level) {
+  
+   if (variable_name == "Temp") {
+      if (select_region != "All") {
+          temp <- Temp_YM %>%
+            filter(Region == select_region) %>% 
+            rename(Value = MeanTemp) 
+      } else {
+         temp <- Temp_YM_AllR %>% 
+            rename(Value = MeanTemp)
+      }
+      displayText = "Temp"
+      displayUnit = "°C"
+    } else {
+      if (select_region != "All") {
+          temp <- Rain_YM %>%
+            filter(Region == select_region) %>% 
+            rename(Value = TotRainfall) 
+      } else {
+         temp <- Rain_YM_AllR %>% 
+            rename(Value = TotRainfall)
+       }
+      displayText = "Rainfall"
+      displayUnit = "mm"
+    }
+   
+   minDate = min(temp$Date)
+   maxDate = max(temp$Date)
+   ts_data <- ts(temp$Value, 
+                 start = c(year(minDate), month(minDate)), 
+                 end = c(year(maxDate), month(maxDate)), frequency = 12)  
+      
+   switch(model_name,
+      "ARIMA" = { model = auto.arima(ts_data, p = 5, seasonal = TRUE)},
+      "HoltWinters" = { model <- HoltWinters(ts_data)},
+      "STL" = {model <- stl(ts_data, s.window="periodic") }
+   )
+    
+   forecast_values <- forecast(model, h = forecast_year * 12, 
+                             level = c(conf_level))
+   actual_values <- ts_data[(length(ts_data) - 
+                        length(forecast_values$mean) + 1):length(ts_data)]
+   
+   forecast_df <- data.frame(Date = time(forecast_values$mean), 
+                           Forecast = forecast_values$mean, 
+                           LowerV = forecast_values$lower, 
+                           UpperV = forecast_values$upper)
+   
+   actual_df <- data.frame(Date = time(ts_data), Actual = ts_data)
+   forecast_df$Period <- format(as.Date(forecast_df$Date, 
+                                      origin = minDate), "%Y-%m")
+   actual_df$Period <- format(as.Date(actual_df$Date, 
+                                      origin = minDate), "%Y-%m")
+   
+   LowerV <- paste("X", as.character(conf_level), ".", sep = "")
+   HigherV <- paste("X", as.character(conf_level), "..1", sep = "")
+   names(forecast_df)[names(forecast_df) == HigherV] <- "UpperV"
+   names(forecast_df)[names(forecast_df) == LowerV] <- "LowerV"
+   
+   #cannot go negative
+   forecast_df$LowerV <- pmax(forecast_df$LowerV, 0)
+   
+   plot_ly() %>%
+     add_lines(data = forecast_df, x = ~Date, y = ~Forecast, 
+         name = "Forecast", line = list(color = 'blue'), 
+         hoverinfo = "text", 
+         text = ~paste("Year-Month: ", Period, 
+                       "<br>", displayText, ": ", 
+                       round(Forecast, 1), displayUnit))%>%
+     add_lines(data = actual_df, x = ~Date, y = ~Actual, 
+              name = "Actual", line = list(color = 'red'), 
+              hoverinfo = "text", 
+              text = ~paste("Year-Month: ", Period, 
+                            "<br>", displayText, ": ", 
+                            Actual, displayUnit)) %>%
+     add_ribbons(data = forecast_df, x = ~Date, 
+                 ymin = ~LowerV, ymax = ~UpperV, 
+                name = paste(conf_level, "% CI"), 
+                fillcolor = 'lightblue',
+                opacity = 0.5,
+                hoverinfo = "text", 
+                text = ~paste("Year-Month: ", Period, 
+                              "<br>CI:", round(LowerV,1), displayUnit,
+                              "-", round(UpperV,1), displayUnit)) %>%
+     layout(title = paste("Forecasting ", displayText,
+                          " for the next ", forecast_year,
+                          " years using ", model_name),
+           xaxis = list(title = "Year"),
+           yaxis = list(title = displayText))
+   
+}
+```
+
+::: callout-note
+As the forecast lower bound values may go negative, we would need to limit them to minimum 0 value as we do not have negative temperature or rainfall in Singapore.
+:::
+
+## 4.2 Test the function
+
+Let's test the function with various parameters:
+
+::: panel-tabset
+## Test #1
+
+Forecast **temperature** using the **ARIMA** method for **North** region data over the next **10** years with a **95**% confidence interval.
+
+```{r}
+GenerateTS("Temp", "ARIMA", "North", 10, 95)
+```
+
+## Test #2
+
+Forecast **temperature** using the **Holt-Winters** method for **East** region data over the next **5** years with a **99**% confidence interval.
+
+```{r}
+GenerateTS("Temp", "HoltWinters", "East", 5, 99)
+```
+
+## Test #3
+
+Forecast **rainfall** using the **STL** method for **all** region data over the next **5** years with a **90**% confidence interval.
+
+```{r}
+GenerateTS("Rain", "STL", "All", 5, 90)
+```
+:::

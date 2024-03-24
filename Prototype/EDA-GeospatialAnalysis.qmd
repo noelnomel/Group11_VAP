@@ -1,0 +1,593 @@
+---
+title: "Prototype - EDA Geospatial Analysis"
+execute: 
+  echo: true # all code chunks will appear
+  eval: true # all code chunks will run live
+  warning: false # do not display warning message
+  freeze: true # do not render if no changes made
+  message: false
+---
+
+# 1. Load Packages
+
+```{r}
+pacman::p_load(tidyverse, sf, tmap, terra, gstat, viridis, automap)
+```
+
+# 2. Import Data
+
+```{r}
+Temp_YM <- readRDS("data/temperature.rds")
+Rainfall_YM <- readRDS("data/rainfall.rds")
+```
+
+```{r}
+unique(Rainfall_YM$Station)
+```
+
+```{r}
+stations <- read.csv("data/aspatial/RainfallStation.csv")
+glimpse(stations)
+```
+
+```{r}
+mpsz <- st_read(dsn = "data/geospatial", layer = "MPSZ-2019") %>% 
+  st_transform(crs=3414)
+mpsz
+```
+
+# 3. Prepare Data
+
+Annual Mean Temperature
+
+```{r}
+glimpse(Temp_YM)
+```
+
+```{r}
+Temp_Y <- Temp_YM %>%
+  select(Station, Region, Year, MeanTemp, MaxTemp, MinTemp) %>%
+  group_by(Station, Region, Year) %>%
+  summarise(MeanTemp = round(mean(MeanTemp, na.rm = TRUE),1),
+            MaxTemp = round(mean(MaxTemp, na.rm = TRUE),1),
+            MinTemp = round(mean(MinTemp, na.rm = TRUE),1))
+head(Temp_Y)
+```
+
+```{r}
+tpdata <- Temp_YM %>% 
+  select(Station, MeanTemp) %>% 
+  left_join(stations)
+glimpse(tpdata)
+```
+
+```{r}
+tpdata_sf <- st_as_sf(tpdata, coords = c("Longitude", "Latitude"),
+                      crs = 4326) %>% 
+  st_transform(crs = 3414)
+glimpse(tpdata_sf)
+```
+
+```{r}
+glimpse(Rainfall_YM)
+```
+
+```{r}
+Rainfall_Y <- Rainfall_YM %>%
+  select(Station, Region, Year, TotalRainfall, TotalRainfall30, TotalRainfall60, TotalRainfall120) %>%
+  group_by(Station, Region, Year) %>%
+  summarise(TotalRainfall = round(mean(TotalRainfall, na.rm = TRUE),1),
+            TotalRainfall30 = round(mean(TotalRainfall30, na.rm = TRUE),1),
+            TotalRainfall60 = round(mean(TotalRainfall60, na.rm = TRUE),1),
+            TotalRainfall120 = round(mean(TotalRainfall120, na.rm = TRUE),1))
+head(Rainfall_Y)
+```
+
+```{r}
+rfdata <- Rainfall_YM %>% 
+  select(Station, TotalRainfall) %>% 
+  left_join(stations)
+glimpse(rfdata)
+```
+
+```{r}
+rfdata_sf <- st_as_sf(rfdata, coords = c("Longitude", "Latitude"), # xaxis then yaxis
+                      crs = 4326) %>% 
+  st_transform(crs = 3414)
+glimpse(rfdata_sf)
+```
+
+# 3. Planning Area Assignment
+
+```{r}
+unique(Rainfall_YM$Station)
+```
+
+```{r}
+station_to_PA <- c(
+  "Admiralty" = "WOODLANDS",
+  "Ang Mo Kio" = "ANG MO KIO",
+  "Boon Lay (East)" = "BOON LAY",
+  "Changi" = "CHANGI",
+  "Choa Chu Kang (South)" = "CHOA CHU KANG",
+  "Clementi" = "CLEMENTI",
+  "Clementi" = "QUEENSTOWN",
+  "East Coast Parkway" = "BEDOK",
+  "Jurong (West)" = "JURONG WEST",
+  "Khatib" = "YISHUN",
+  "Newton" = "NEWTON",
+  "Newton" = "NOVENA",
+  "Pasir Panjang" = "PASIR PANJANG",
+  "Paya Lebar" = "PAYA LEBAR",
+  "Seletar" = "SELETAR",
+  "Sembawang" = "SEMBAWANG",
+  "Tai Seng" = "HOUGANG",
+  "Tengah" = "TENGAH",
+  "Tuas South" = "TUAS"
+)
+```
+
+```{r}
+Temp_Y$PA <- station_to_PA[Temp_Y$Station]
+Temp_Y <- Temp_Y[, c("PA", setdiff(names(Temp_Y), "PA"))]
+head(Temp_Y)
+```
+
+```{r}
+Rainfall_Y$PA <- station_to_PA[Rainfall_Y$Station]
+Rainfall_Y <- Rainfall_Y[, c("PA", setdiff(names(Rainfall_Y), "PA"))]
+head(Rainfall_Y)
+```
+
+# 4. Merge Data
+
+```{r}
+tempmpsz <- left_join(Temp_Y, mpsz, by = c("PA" = "PLN_AREA_N"))
+head(tempmpsz)
+```
+
+```{r}
+mpsztemp <- left_join(mpsz, Temp_Y, by = c("PLN_AREA_N" = "PA"))
+mpsztemp <- mpsztemp %>% 
+  filter(!if_all(c(Station, MeanTemp), is.na))
+head(mpsztemp)
+```
+
+```{r}
+rainfallmpsz <- left_join(mpsz, Rainfall_Y, by = c("PLN_AREA_N" = "PA"))
+rainfallmpsz <- rainfallmpsz %>% 
+  filter(!if_all(c(Station, TotalRainfall), is.na))
+head(rainfallmpsz)
+```
+
+# 5. Geospatial Analysis
+
+## Prototype
+
+### Temperature
+
+![](images/geo_temp.png)
+
+### Rainfall
+
+![](images/geo_rainfall.png)
+
+# 5.1 Choropleth Map
+
+## Temperature
+
+::: panel-tabset
+### pretty
+
+```{r}
+tmap_mode("view")
+
+tm_shape(mpsztemp) +
+  tm_polygons(col = "MeanTemp", 
+              palette = "Oranges", 
+              style = "pretty") +
+  tm_layout(main.title = "Distribution of Dependency Ratio by planning subzone",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_borders(alpha = 0.5) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2) +
+  tm_credits("Source: Planning Sub-zone boundary from URA\n and Weather Measurements from MSS", 
+             position = c("left", "bottom"))+
+  tmap_options(check.and.fix = TRUE) +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+### bclust
+
+```{r}
+tmap_mode("view")
+
+tm_shape(mpsztemp) +
+  tm_polygons(col = "MeanTemp", 
+              palette = "Oranges", 
+              style = "bclust") +
+  tmap_options(check.and.fix = TRUE) +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+### equal
+
+```{r}
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsztemp) +
+  tm_polygons(col = "MeanTemp", 
+              palette = "Oranges", 
+              style = "equal") +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+### fisher
+
+```{r}
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+
+tm_shape(mpsztemp) +
+  tm_polygons(col = "MeanTemp", 
+              palette = "Oranges", 
+              style = "fisher") +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+### jenks
+
+```{r}
+tmap_mode("view")
+
+tm_shape(mpsztemp) +
+  tm_polygons(col = "MeanTemp", 
+              palette = "Oranges", 
+              style = "jenks") +
+  tmap_options(check.and.fix = TRUE) +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+### kmeans
+
+```{r}
+tmap_mode("view")
+
+tm_shape(mpsztemp) +
+  tm_polygons(col = "MeanTemp", 
+              palette = "Oranges", 
+              style = "jenks") +
+  tmap_options(check.and.fix = TRUE) +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+### quantile
+
+```{r}
+tmap_mode("view")
+
+tm_shape(mpsztemp) +
+  tm_polygons(col = "MeanTemp", 
+              palette = "Oranges", 
+              style = "jenks") +
+  tmap_options(check.and.fix = TRUE) +
+  tm_view(set.zoom.limits = c(11,12))
+```
+:::
+
+## Rainfall
+
+```{r}
+tmap_mode("view")
+
+tm_shape(rainfallmpsz) +
+  tm_polygons(col = "TotalRainfall", 
+              palette = "Blues", 
+              style = "jenks") +
+  tmap_options(check.and.fix = TRUE) +
+  tm_view(set.zoom.limits = c(11,12))
+```
+
+## Transformation to Shiny App
+
+UI
+
+```{r}
+#| eval: false
+
+ui <- fluidPage(
+  titlePanel("Adjustable Style Parameters"),
+  
+  # Sidebar layout
+  sidebarLayout(
+    sidebarPanel(
+      # Input for selecting style parameter
+      selectInput("style_param", label = "Select Style Parameter:",
+                  choices = c("jenks", "pretty", "bclust", "equal", "fisher", "kmeans", "quantile"),
+                  selected = "jenks"),
+      # Input for selecting variable (Temperature or Rainfall)
+      selectInput("variable_param", label = "Select Variable:",
+                  choices = c("Temperature", "Rainfall"),
+                  selected = "Temperature")
+    ),
+    
+    # Main panel to display the plot
+    mainPanel(
+      plotOutput("style_plot")
+    )
+  )
+)
+```
+
+Server
+
+```{r}
+#| eval: false
+
+server <- function(input, output) {
+  
+  # Reactive expression to create the map based on selected style parameter and variable
+  output$style_plot <- renderPlot({
+    tmap_mode("view")
+    tmap_options(check.and.fix = TRUE)
+    
+    if (input$variable_param == "Temperature") {
+      tm <- tm_shape(mpsztemp) +
+        tm_polygons(col = "MeanTemp", palette = "Oranges", style = input$style_param) +
+        tm_view(set.zoom.limits = c(11, 12))
+    } else if (input$variable_param == "Rainfall") {
+      tm <- tm_shape(rainfallmpsz) +
+        tm_polygons(col = "TotalRainfall", palette = "Blues", style = input$style_param) +
+        tm_view(set.zoom.limits = c(11, 12))
+    }
+    
+    print(tm)
+  })
+}
+```
+
+# 5.2 Isohyet Maps
+
+```{r}
+grid <- terra::rast(mpsz, nrows = 690, ncols = 1075)
+grid
+```
+
+```{r}
+xy <- terra::xyFromCell(grid, 1:ncell(grid))
+head(xy)
+```
+
+```{r}
+coop <- st_as_sf(as.data.frame(xy), 
+                 coords = c("x", "y"),
+                 crs = st_crs(mpsz))
+coop <- st_filter(coop, mpsz)
+head(coop)
+```
+
+Formula (formula parameter): This parameter specifies the formula for the geostatistical model. You can modify the formula to include additional variables or change the modeling approach as required. The formula syntax typically follows R's formula notation, such as response \~ predictors. Locations (locations parameter): This parameter specifies the locations of the data points used in the geostatistical analysis. You can provide spatial data (e.g., points, polygons) using a spatial object (e.g., SpatialPointsDataFrame, sf object) or a data frame containing spatial coordinates. Number of Neighbors (nmax parameter): The nmax parameter controls the number of neighboring locations used in the analysis. By default, it is set to 5, but you can change this value based on the spatial characteristics of your data and the desired level of detail in the analysis. Set Options (set parameter): The set parameter allows you to specify additional settings and options for the geostatistical analysis. In your code, idp = 0 is provided as an example. Depending on the specific geostatistical method or model you are using, there may be other options you can set here.
+
+## Temperature
+
+```{r}
+res1 <- gstat(formula = MeanTemp ~ 1, 
+             locations = tpdata_sf, 
+             nmax = 5,
+             set = list(idp = 0))
+```
+
+```{r}
+resp1 <- predict(res1, coop)
+glimpse(resp1)
+```
+
+```{r}
+resp1$x <- st_coordinates(resp1)[,1]
+resp1$y <- st_coordinates(resp1)[,2]
+resp1$pred <- resp1$var1.pred
+
+pred1 <- terra::rasterize(resp1, grid, 
+                         field = "pred", 
+                         fun = "mean")
+```
+
+```{r}
+tmap_options(check.and.fix = TRUE)
+tmap_mode("plot")
+tm_shape(pred1) + 
+  tm_raster(alpha = 0.6, 
+            palette = "viridis")
+```
+
+```{r}
+v1 <- variogram(MeanTemp ~ 1, 
+               data = tpdata_sf)
+plot(v1)
+```
+
+Change the Variogram Model: Try using a different variogram model that can handle zero-distance semivariances more effectively. Common variogram models include Spherical (Sph), Exponential (Exp), Gaussian (Gau), and Linear (Lin). Experiment with different models to see which one fits your data better. Adjust Parameters: Instead of specifying a range of 5000, which is quite large, consider reducing the range parameter to a more reasonable value based on the spatial characteristics of your data. Similarly, adjust the nugget parameter to a suitable value that reflects the measurement error or variability at very short distances. Try Different Fit Methods: If changing the variogram model and adjusting parameters does not resolve the issue, you can try using a different fit method (fit.method). The error message suggests that fit.method 7 is not suitable for zero-distance semivariances. You can experiment with other fit methods such as 1, 2, 3, etc., to see if they provide a better fit for your data.
+
+```{r}
+fv1 <- fit.variogram(object = v1, 
+                    model = vgm(psill = 0.5, model = "Exp", range = 1000, nugget = 0.1),
+                    fit.method = 1)  
+fv1
+```
+
+```{r}
+plot(v1, fv1)
+```
+
+```{r}
+k1 <- gstat(formula = MeanTemp ~ 1, 
+           data = tpdata_sf, 
+           model = fv1)
+k1
+```
+
+```{r}
+#| eval: false
+kpred1 <- terra::rasterize(resp1, grid, 
+                           field = "pred")
+kpred1
+```
+
+```{r}
+#| eval: false
+tmap_options(check.and.fix = TRUE)
+tmap_mode("plot")
+tm_shape(kpred1) + 
+  tm_raster(alpha = 0.6, 
+            palette = "viridis",
+            title = "Total Mean Temperature") +
+  tm_layout(main.title = "Distribution of Mean Temperature",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45, 
+            legend.width = 0.35,
+            frame = TRUE) +
+  tm_compass(type="8star", size = 2) +
+  tm_scale_bar() +
+  tm_grid(alpha =0.2)
+```
+
+## Rainfall
+
+```{r}
+res2 <- gstat(formula = TotalRainfall ~ 1, 
+             locations = rfdata_sf, 
+             nmax = 5,
+             set = list(idp = 0))
+```
+
+```{r}
+resp2 <- predict(res2, coop)
+glimpse(resp2)
+```
+
+```{r}
+resp2$x <- st_coordinates(resp2)[,1]
+resp2$y <- st_coordinates(resp2)[,2]
+resp2$pred <- resp2$var1.pred
+
+pred2 <- terra::rasterize(resp2, grid, 
+                          field = "pred", 
+                          fun = "mean")
+```
+
+```{r}
+tmap_options(check.and.fix = TRUE)
+tmap_mode("plot")
+tm_shape(pred2) + 
+  tm_raster(alpha = 0.6, 
+            palette = "viridis")
+```
+
+## Transformation to Shiny App
+
+UI
+
+```{r}
+#| eval: false
+
+ui <- fluidPage(
+  titlePanel("Adjustable Geostatistical Analysis Parameters"),
+  
+  sidebarLayout(
+    sidebarPanel(
+      # Input for number of neighbors
+      sliderInput("n_neighbors", "Number of Neighbors:",
+                  min = 0, max = 20, value = 5),
+      # Input for model options
+      selectInput("model_option", "Model Options:",
+                  choices = c("Sph", "Exp", "Gau", "Lin"),
+                  selected = "Sph"),
+      # Input for range
+      sliderInput("range_param", "Range:",
+                  min = 1000, max = 5000, step = 1000, value = 5000),
+      # Input for fit methods
+      selectInput("fit_method", "Fit Methods:",
+                  choices = c(1, 2, 3, 4),
+                  selected = 1)
+    ),
+    
+    mainPanel(
+      # Placeholder for plot
+      plotOutput("geo_plot")
+    )
+  )
+)
+
+```
+
+Server
+
+```{r}
+#| eval: false
+
+server <- function(input, output) {
+  
+  # Reactive expression for geostatistical analysis
+  output$geo_plot <- renderPlot({
+    
+    # Create grid
+    grid <- terra::rast(mpsz, nrows = 690, ncols = 1075)
+    
+    # Extract xy coordinates
+    xy <- terra::xyFromCell(grid, 1:ncell(grid))
+    coop <- st_as_sf(as.data.frame(xy), coords = c("x", "y"))
+    coop <- st_filter(coop, mpsz)
+    
+    # Perform geostatistical analysis for Temperature
+    if (input$model_option == "Sph") {
+      model <- "Spherical"
+    } else if (input$model_option == "Exp") {
+      model <- "Exponential"
+    } else if (input$model_option == "Gau") {
+      model <- "Gaussian"
+    } else {
+      model <- "Linear"
+    }
+    
+    res <- gstat(formula = MeanTemp ~ 1, 
+                 locations = tpdata_sf, 
+                 nmax = input$n_neighbors,
+                 set = list(idp = 0),
+                 model = vgm(psill = 0.5, model = model, range = input$range_param, nugget = 0.1),
+                 fit.method = input$fit_method)
+    
+    resp <- predict(res, coop)
+    
+    resp$x <- st_coordinates(resp)[, 1]
+    resp$y <- st_coordinates(resp)[, 2]
+    resp$pred <- resp$var1.pred
+    
+    pred <- terra::rasterize(resp, grid, 
+                             field = "pred", 
+                             fun = "mean")
+    
+    # Plot the result
+    tmap_options(check.and.fix = TRUE)
+    tmap_mode("plot")
+    tm_shape(pred1) + 
+      tm_raster(alpha = 0.6, palette = "viridis") +
+      tm_layout(main.title = "Distribution of Mean Temperature",
+                main.title.position = "center",
+                main.title.size = 1.2,
+                legend.height = 0.45, 
+                legend.width = 0.35,
+                frame = TRUE) +
+      tm_compass(type = "8star", size = 2) +
+      tm_scale_bar() +
+      tm_grid(alpha = 0.2)
+  })
+}
+
+```
