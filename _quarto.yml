@@ -49,7 +49,9 @@ page-footer:
 
 format:
   html:
-    theme: minty
+    theme: 
+    - minty
+    - minty_custom.scss
     css: styles.css
     toc: true
 
