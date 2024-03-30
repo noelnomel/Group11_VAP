@@ -13,18 +13,16 @@ editor: visual
 
 The code below uses `p_load()` of the Pacman package to check if all the required packages are installed on the laptop. If they are, then they will be launched into the R environment.
 
-|                                    Package                                    | Description                                                                                                  |
+|                         Package                         | Description                                                                                                  |
 |:----------------------------:|------------------------------------------|
-|                  [**tidyverse**](https://www.tidyverse.org/)                  | A collection of core packages designed for data science used extensively for data preparation and wrangling. |
-| [**lubridate**](https://lubridate.tidyverse.org/reference/make_datetime.html) | For manipulating date-times.                                                                                 |
-|          [**janitor**](https://sfirke.github.io/janitor/reference/)           | For quick formatting of data frame columns.                                                                  |
-|                     [**fs**](https://github.com/r-lib/fs)                     | For retrieving a list of file names in our directory for import into R                                       |
-|    [**zoo**](https://www.rdocumentation.org/packages/zoo/versions/1.8-12)     | For irregular time series of numeric vectors/matrices and factors manipulation                               |
-|  [**visdat**](https://www.rdocumentation.org/packages/visdat/versions/0.6.0)  | For checking missing values in a dataframe                                                                   |
+|       [**tidyverse**](https://www.tidyverse.org/)       | A collection of core packages designed for data science used extensively for data preparation and wrangling. |
+|      [**tsibble**](https://tsibble.tidyverts.org/)      | For tidy temporal data with wrangling tools                                                                  |
+| [**fable**](https://fable.tidyverts.org/)**, forecast** | A collection of commonly used univariate and multivariate time series forecasting models.                    |
+|                       **tseries**                       | For performing augmented Dickey-Fuller tests to check whether a time series is stationary                    |
 
 ```{r}
-pacman::p_load(readr, tidyverse, plotly, ggplot2, 
-               zoo, forecast, janitor, fs, visdat, fable, tsibble, tseries)
+pacman::p_load(readr, tidyverse, plotly, ggplot2, tsibble, tseries,
+               forecast, fable)
 ```
 
 # 2 Import data
@@ -34,236 +32,351 @@ Temperature <- readRDS("data/temperature.rds")
 Rainfall <- readRDS("data/rainfall.rds")
 ```
 
-Create time series Object
+Combine the datasets and retain the rows (months) that have both rainfall and temperature values.
 
 ```{r}
-Temp <- Temperature %>%     
-   group_by(Date) %>%     
-   summarise(MeanTemp = mean(MeanTemp)) 
-temp_ts <- tsibble(date = Temp$Date,       
-                   temperature = Temp$MeanTemp) 
+merged_data <- merge(Temperature, Rainfall, 
+                     by = c("Date", "Region", "Station")) 
+
+data_ts <- merged_data %>%     
+  group_by(Date) %>% 
+  summarise(AveTemp = mean(MeanTemp),
+            MaxTemp = max(MaxTemp),
+            MinTemp = min(MinTemp),
+            Rainfall = mean(TotalRainfall)) %>% 
+  mutate(YearMonth = yearmonth(Date)) %>% 
+  ungroup()
+
+data_EDA <- data_ts %>% 
+  as_tsibble(index = Date) 
+
+data_ts <- data_ts %>% 
+  as_tsibble(index = (YearMonth)) 
+
+data_region_ts <- merged_data %>%     
+  group_by(Region, Date) %>% 
+  summarise(AveTemp = mean(MeanTemp),
+            MaxTemp = max(MaxTemp),
+            MinTemp = min(MinTemp),
+            Rainfall = mean(TotalRainfall)) %>% 
+  mutate(YearMonth = yearmonth(Date)) %>% 
+  ungroup()
 ```
 
-Check if the temperature time series is stationary using Augmented Dickey-Fuller Test
+# 3 Exploratory Data Analysis
+
+## 3.1 Temperature time-series analysis
+
+Let's break down the temperature time-series analysis to look at the seasonal, trend and residual components.
 
 ```{r}
-adf.test(temp_ts$temperature)
-```
+#| code-fold: true 
+#| code-summary: "Show the code" 
+data_ts.ts = ts(data_EDA$AveTemp, frequency = 12)
+decomposed <- decompose(data_ts.ts)
 
-::: callout-note
-The above test shows that our temperature time-series object is stationary (reject Null hypothesis as p-value = 0.01. This signifies that the statistical properties of time series, such as mean, variance, and covariance, remain constant over time, which is the fundamental assumption for many time series modeling techniques.It simplifies the complex dynamics within the data, making it more amenable to analysis, modeling, and forecasting.
-:::
-
-Create time series Object
-
-```{r}
-Rain <- Rainfall %>%   
-   group_by(Date) %>%       
-   summarise(TotalRain = sum(TotalRainfall))
-Rain_ts <- tsibble(date = Rain$Date,    
-                   Rain = Rain$TotalRain) 
-```
-
-Check if temperature time series is stationary using Augmented Dickey-Fuller Test
-
-```{r}
-adf.test(Rain_ts$Rain)
-```
-
-::: callout-note
-The above test shows that our rainfall time-series object is stationary (reject Null hypothesis as p-value = 0.01.
-:::
-
-```{r}
-Temp_YM <- Temperature %>% 
-   group_by(Region, Year, Month) %>% 
-   reframe(Date = Date,            
-           MeanTemp = round(mean(MeanTemp, na.rm = TRUE),1),
-           MaxTemp = round(max(MaxTemp, na.rm = TRUE),1),
-           MinTemp = round(min(MinTemp, na.rm = TRUE),1) ) %>% 
-   distinct() %>% 
-   ungroup() %>% 
-   filter(!is.na(MeanTemp))
-
-Temp_YM_AllR <- Temperature %>% 
-   group_by(Year, Month) %>% 
-   reframe(Date = Date,            
-           MeanTemp = round(mean(MeanTemp, na.rm = TRUE),1),
-           MaxTemp = round(max(MaxTemp, na.rm = TRUE),1),
-           MinTemp = round(min(MinTemp, na.rm = TRUE),1) ) %>% 
-   distinct() %>% 
-   ungroup() %>% 
-   filter(!is.na(MeanTemp))
-
-Rain_YM <- Rainfall %>% 
-   group_by(Region, Year, Month) %>% 
-   reframe(Date = Date,            
-           TotRainfall = round(sum(TotalRainfall, na.rm = TRUE),1)) %>% 
-   distinct() %>% 
-   ungroup() %>% 
-   filter(!is.na(TotRainfall))
-
-Rain_YM_AllR <- Rainfall %>% 
-   group_by(Year, Month) %>% 
-   reframe(Date = Date,            
-           TotRainfall = round(sum(TotalRainfall, na.rm = TRUE),1)) %>% 
-   distinct() %>% 
-   ungroup() %>% 
-   filter(!is.na(TotRainfall))
+# Plot the decomposed components
+autoplot(decomposed) +
+  ggtitle("Decomposition of the Temperature time-series data") +
+  xlab("Year")
 
 ```
 
-# 3 UI Design
-
-This section is on the UI design for forecasting of temperature and rainfall (univariate) for the next few years.
-
-![](images/clipboard-3874476906.png)
-
-From the above design, users are able to make the following selection:
-
--   Choose the forecasting model (ARIMA, Holt-Winters or Seasonal & Trend Decomposition)
-
--   Choose the forecast Parameter (temperature or rainfall)
-
--   Choose the region (North, North-East, West, East, Central or All)
-
--   Choose the number of years to forecast (range from 5 to 20 years)
-
--   Choose the confidence level of the forecast (90%, 95% or 99%)
-
-Once the users click on the "Generate" button, the forecast plot will be shown on the right. Users can mouse over the data points to look at the forecast values.
-
-# 4 Prototype
-
-## 4.1 Create a function
-
-This function will take in all the five parameters that users set, generate the forecasting values and plot the graph using `plotly()`.
+Let's substract seasonality
 
 ```{r}
-GenerateTS <- function(variable_name, model_name, select_region,
-                       forecast_year, conf_level) {
-  
-   if (variable_name == "Temp") {
-      if (select_region != "All") {
-          temp <- Temp_YM %>%
-            filter(Region == select_region) %>% 
-            rename(Value = MeanTemp) 
-      } else {
-         temp <- Temp_YM_AllR %>% 
-            rename(Value = MeanTemp)
-      }
-      displayText = "Temp"
-      displayUnit = "°C"
-    } else {
-      if (select_region != "All") {
-          temp <- Rain_YM %>%
-            filter(Region == select_region) %>% 
-            rename(Value = TotRainfall) 
-      } else {
-         temp <- Rain_YM_AllR %>% 
-            rename(Value = TotRainfall)
-       }
-      displayText = "Rainfall"
-      displayUnit = "mm"
-    }
-   
-   minDate = min(temp$Date)
-   maxDate = max(temp$Date)
-   ts_data <- ts(temp$Value, 
-                 start = c(year(minDate), month(minDate)), 
-                 end = c(year(maxDate), month(maxDate)), frequency = 12)  
-      
-   switch(model_name,
-      "ARIMA" = { model = auto.arima(ts_data, p = 5, seasonal = TRUE)},
-      "HoltWinters" = { model <- HoltWinters(ts_data)},
-      "STL" = {model <- stl(ts_data, s.window="periodic") }
-   )
-    
-   forecast_values <- forecast(model, h = forecast_year * 12, 
-                             level = c(conf_level))
-   actual_values <- ts_data[(length(ts_data) - 
-                        length(forecast_values$mean) + 1):length(ts_data)]
-   
-   forecast_df <- data.frame(Date = time(forecast_values$mean), 
-                           Forecast = forecast_values$mean, 
-                           LowerV = forecast_values$lower, 
-                           UpperV = forecast_values$upper)
-   
-   actual_df <- data.frame(Date = time(ts_data), Actual = ts_data)
-   forecast_df$Period <- format(as.Date(forecast_df$Date, 
-                                      origin = minDate), "%Y-%m")
-   actual_df$Period <- format(as.Date(actual_df$Date, 
-                                      origin = minDate), "%Y-%m")
-   
-   LowerV <- paste("X", as.character(conf_level), ".", sep = "")
-   HigherV <- paste("X", as.character(conf_level), "..1", sep = "")
-   names(forecast_df)[names(forecast_df) == HigherV] <- "UpperV"
-   names(forecast_df)[names(forecast_df) == LowerV] <- "LowerV"
-   
-   #cannot go negative
-   forecast_df$LowerV <- pmax(forecast_df$LowerV, 0)
-   
-   plot_ly() %>%
-     add_lines(data = forecast_df, x = ~Date, y = ~Forecast, 
-         name = "Forecast", line = list(color = 'blue'), 
-         hoverinfo = "text", 
-         text = ~paste("Year-Month: ", Period, 
-                       "<br>", displayText, ": ", 
-                       round(Forecast, 1), displayUnit))%>%
-     add_lines(data = actual_df, x = ~Date, y = ~Actual, 
-              name = "Actual", line = list(color = 'red'), 
-              hoverinfo = "text", 
-              text = ~paste("Year-Month: ", Period, 
-                            "<br>", displayText, ": ", 
-                            Actual, displayUnit)) %>%
-     add_ribbons(data = forecast_df, x = ~Date, 
-                 ymin = ~LowerV, ymax = ~UpperV, 
-                name = paste(conf_level, "% CI"), 
-                fillcolor = 'lightblue',
-                opacity = 0.5,
-                hoverinfo = "text", 
-                text = ~paste("Year-Month: ", Period, 
-                              "<br>CI:", round(LowerV,1), displayUnit,
-                              "-", round(UpperV,1), displayUnit)) %>%
-     layout(title = paste("Forecasting ", displayText,
-                          " for the next ", forecast_year,
-                          " years using ", model_name),
-           xaxis = list(title = "Year"),
-           yaxis = list(title = displayText))
-   
+#| code-fold: true 
+#| code-summary: "Show the code" 
+data_ts.adj <- data_ts.ts - decomposed$seasonal
+autoplot(data_ts.adj) + 
+  ggtitle("Decomposition of Temperature time-series data without seasonal components") +
+  xlab("Year") +
+  ylab("Temperature")
+```
+
+Similarly with trend
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+data_ts.adj <- data_ts.ts - decomposed$trend
+autoplot(data_ts.adj) +
+  ggtitle("Decomposition of Temperature time-series data without trend components") +
+  xlab("Year") +
+  ylab("Temperature variation")
+
+```
+
+Let's look at the ACF and PACF plots
+
+```{r}
+ ggtsdisplay(difference(data_EDA$AveTemp, 12),
+               plot_type='partial', lag=36) +
+  labs(title="Seasonally differenced", y="")
+```
+
+## 3.2 Rainfall time-series analysis
+
+Let's break down the rainfall time-series analysis to look at the seasonal, trend and residual components.
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+data_ts.ts = ts(data_EDA$Rainfall, frequency = 12)
+decomposed <- decompose(data_ts.ts)
+
+# Plot the decomposed components
+autoplot(decomposed) +
+  ggtitle("Decomposition of the Temperature time-series data") +
+  xlab("Year")
+
+```
+
+Let's substract seasonality
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+data_ts.adj <- data_ts.ts - decomposed$seasonal
+autoplot(data_ts.adj) + 
+  ggtitle("Decomposition of Rainfall time-series data without seasonal components") +
+  xlab("Year") +
+  ylab("Rainfall (mm)")
+```
+
+Similarly with trend
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+data_ts.adj <- data_ts.ts - decomposed$trend
+autoplot(data_ts.adj) +
+  ggtitle("Decomposition of Rainfall time-series data without trend components") +
+  xlab("Year") +
+  ylab("Rainfall variation (mm)")
+
+```
+
+Let's look at the ACF and PACF plots
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+ ggtsdisplay(difference(data_EDA$Rainfall, 12),
+               plot_type='partial', lag=36) +
+  labs(title="Seasonally differenced", y="")
+```
+
+# 4 UI Design
+
+This section is on the UI design for forecasting temperature and rainfall (univariate) for the next few years.
+
+# 5 Forecasting method
+
+## 5.1 Forecast using Exponential smoothing state space model
+
+Users can select values for the following:
+
+-   3 components (Error, Trend, Season),
+-   the optimisation criterion
+-   the number of forecast years
+-   the variable (AveTemp, MaxTemp, MinTemp, TotalRain)
+-   region
+
+```{r}
+#| code-fold: true 
+#| code-summary: "Show the code" 
+#input values:
+# Error can have additive ("A") or multiplicative ("M")
+input_error <- "A"
+# Trend can have none ("N"), additive ("A"), damped variants ("Ad")
+input_trend <- "A"
+# season can have none ("N"), additive ("A") or multiplicative ("M")
+# note that multiplicative take a long time to generate
+input_season <- "A"
+input_forecast_years <- 1
+# information criterion to choose the model can be "aicc", "aic", "bic"
+# Akaike Information Criterion (AIC), Bayesian Information Criterion (BIC) and Corrected Akaike Information Criterion (AICc)
+
+#sigma", "mae"  log-likelihood "lik", "mse" (Mean Square Error), "amse" (Average MSE, "sigma" (Standard deviation of residuals), or "mae" (Mean Absolute Error).
+input_opt_crit <- "mae"
+
+# can be "North", "Central", "North-East", "East", "West", "All"
+input_region <- "North"
+# can be "MaxTemp", "MaxTemp", "MinTemp", "TotalRainfall"
+input_variable <- "MaxTemp"
+
+
+if (input_region != "All") {
+  data <- data_region_ts %>% 
+    filter(Region == input_region) %>% 
+    as_tsibble(index = (YearMonth))
+} else {
+  data <-data_ts
 }
+ 
+if (input_variable == "Rainfall"){
+    data <- data %>% rename(Value = Rainfall)
+    displayText = "Rainfall"
+    displayUnit = "mm"
+} else {
+  if (input_variable == "MeanTemp") {
+    data <- data %>% rename(Value = AveTemp)
+  } else if (input_variable == "MaxTemp") {
+    data <- data %>% rename(Value = MaxTemp)
+  } else {
+    data <- data %>% rename(Value = MinTemp)
+  }
+  displayText = "Temperature"
+  displayUnit = "°C"
+}
+
+ets_model <- data %>%
+  model(ETS(Value ~ error(input_error) + 
+              trend(input_trend) + season(input_season), 
+            opt_crit = input_opt_crit)) 
+
+#can get the IC and OC values
+ets_model %>% glance()
+
+forecast_values <- forecast(ets_model, h = input_forecast_years * 12)  
+
+quantiles <- forecast_values %>%
+  group_by(.model) %>%
+  summarise(lower_80 = quantile(Value, 0.1),
+            upper_80 = quantile(Value, 0.9),
+            lower_95 = quantile(Value, 0.025),
+            upper_95 = quantile(Value, 0.975))
+
+p <- ggplot() +
+  geom_line(data = data, 
+            aes(x = Date, y = Value, color = "Observed"), 
+            linetype = "solid") +
+  geom_line(data = forecast_values, 
+            aes(x = as.Date(YearMonth), y = .mean, color = "Forecast"), 
+            linetype = "dashed") +
+  geom_point(data = forecast_values, 
+             aes(x = as.Date(YearMonth), y = .mean, 
+                 text = paste("YearMonth:", YearMonth, 
+                              "<br>Forecasted:", round(.mean, 1), displayUnit)),
+            size = 1, color = "red") +
+  geom_point(data = data, 
+             aes(x = Date, y = Value, 
+                 text = paste("YearMonth:", YearMonth, 
+                              "<br>Observed:", round(Value, 1), displayUnit)),
+             size = 1, color = "blue") +
+  geom_ribbon(data = quantiles, 
+              aes(x = as.Date(YearMonth), 
+                  ymin = lower_80, 
+                  ymax = upper_80), fill = "black", alpha = 0.5) +
+  geom_ribbon(data = quantiles, 
+              aes(x = as.Date(YearMonth), 
+                  ymin = lower_95, 
+                  ymax = upper_95), fill = "gray", alpha = 0.5) +
+  xlab("Year") +
+  ylab(displayText) +
+  ggtitle(paste("Forecast ", displayText)) +
+  scale_color_manual(values = c("Observed" = "blue", "Forecast" = "red")) +
+  theme_minimal()
+
+ggplotly(p, tooltip = "text")
 ```
 
-::: callout-note
-As the forecast lower bound values may go negative, we would need to limit them to minimum 0 value as we do not have negative temperature or rainfall in Singapore.
-:::
+## 5.2 Forecast using ARIMA
 
-## 4.2 Test the function
+Users can select values for the following:
 
-Let's test the function with various parameters:
-
-::: panel-tabset
-## Test #1
-
-Forecast **temperature** using the **ARIMA** method for **North** region data over the next **10** years with a **95**% confidence interval.
+-   3 components (p, d, q),
+-   stepwise option (TRUE/FALSE)
+-   the number of forecast years
+-   the variable (AveTemp, MaxTemp, MinTemp, TotalRain)
+-   region
 
 ```{r}
-GenerateTS("Temp", "ARIMA", "North", 10, 95)
+#| code-fold: true 
+#| code-summary: "Show the code" 
+input_stepwise <- TRUE
+input_forecast_years <- 1
+#non seasonal p = [1,5], d=[0,2], q=[0,5]
+#seasonal P=[0,2], D=[0,1], Q=[0,2]
+input_p <- 2
+input_d <- 0
+input_q <- 1
+# can be "North", "Central", "North-East", "East", "West", "All"
+input_region <- "North"
+# can be "MaxTemp", "MaxTemp", "MinTemp", "TotalRainfall"
+input_variable <- "TotalRainfall"
+
+if (input_region != "All") {
+  data <- data_region_ts %>% 
+    filter(Region == input_region) %>% 
+    as_tsibble(index = (YearMonth))
+} else {
+  data <-data_ts
+}
+ 
+if (input_variable == "Rainfall"){
+    data <- data %>% rename(Value = Rainfall)
+    displayText = "Rainfall"
+    displayUnit = "mm"
+} else {
+  if (input_variable == "MeanTemp") {
+    data <- data %>% rename(Value = AveTemp)
+  } else if (input_variable == "MaxTemp") {
+    data <- data %>% rename(Value = MaxTemp)
+  } else {
+    data <- data %>% rename(Value = MinTemp)
+  }
+  displayText = "Temperature"
+  displayUnit = "°C"
+}
+
+ets_model <- data %>%
+  model(ARIMA(Value ~ pdq(input_p, input_d, input_q), 
+              stepwise = input_stepwise))
+
+#can get the IC and OC values
+ets_model %>% glance()
+
+forecast_values <- forecast(ets_model, h = input_forecast_years * 12)  
+
+quantiles <- forecast_values %>%
+  group_by(.model) %>%
+  summarise(lower_80 = quantile(Value, 0.1),
+            upper_80 = quantile(Value, 0.9),
+            lower_95 = quantile(Value, 0.025),
+            upper_95 = quantile(Value, 0.975))
+
+p <- ggplot() +
+  geom_line(data = data, 
+            aes(x = Date, y = Value, color = "Observed"), 
+            linetype = "solid") +
+  geom_line(data = forecast_values, 
+            aes(x = as.Date(YearMonth), y = .mean, color = "Forecast"), 
+            linetype = "dashed") +
+  geom_point(data = forecast_values, 
+             aes(x = as.Date(YearMonth), y = .mean, 
+                 text = paste("YearMonth:", YearMonth, 
+                              "<br>Forecasted:", round(.mean, 1), displayUnit)),
+            size = 1, color = "red") +
+  geom_point(data = data, 
+             aes(x = Date, y = Value, 
+                 text = paste("YearMonth:", YearMonth, 
+                              "<br>Observed:", round(Value, 1), displayUnit)),
+             size = 1, color = "blue") +
+  geom_ribbon(data = quantiles, 
+              aes(x = as.Date(YearMonth), 
+                  ymin = lower_80, 
+                  ymax = upper_80), fill = "black", alpha = 0.5) +
+  geom_ribbon(data = quantiles, 
+              aes(x = as.Date(YearMonth), 
+                  ymin = lower_95, 
+                  ymax = upper_95), fill = "gray", alpha = 0.5) +
+  xlab("Year") +
+  ylab(displayText) +
+  ggtitle(paste("Forecast ", displayText)) +
+  scale_color_manual(values = c("Observed" = "blue", "Forecast" = "red")) +
+  theme_minimal()
+
+ggplotly(p, tooltip = "text")
 ```
-
-## Test #2
-
-Forecast **temperature** using the **Holt-Winters** method for **East** region data over the next **5** years with a **99**% confidence interval.
-
-```{r}
-GenerateTS("Temp", "HoltWinters", "East", 5, 99)
-```
-
-## Test #3
-
-Forecast **rainfall** using the **STL** method for **all** region data over the next **5** years with a **90**% confidence interval.
-
-```{r}
-GenerateTS("Rain", "STL", "All", 5, 90)
-```
-:::
