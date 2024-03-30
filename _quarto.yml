@@ -2,6 +2,7 @@ project:
   type: website
 
 website:
+  #title: "<img src='images/logo.png' alt='The Heat is On!' />"
   title: "The Heat is On!"
   navbar:
     left:

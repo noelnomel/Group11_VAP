@@ -14,7 +14,7 @@ editor: visual
 The code below uses `p_load()` of the Pacman package to check if all the required packages are installed on the laptop. If they are, then they will be launched into the R environment.
 
 |                         Package                         | Description                                                                                                  |
-|:----------------------------:|------------------------------------------|
+|:-----------------------:|----------------------------------------------|
 |       [**tidyverse**](https://www.tidyverse.org/)       | A collection of core packages designed for data science used extensively for data preparation and wrangling. |
 |      [**tsibble**](https://tsibble.tidyverts.org/)      | For tidy temporal data with wrangling tools                                                                  |
 | [**fable**](https://fable.tidyverts.org/)**, forecast** | A collection of commonly used univariate and multivariate time series forecasting models.                    |
@@ -170,6 +170,24 @@ Let's look at the ACF and PACF plots
 # 4 UI Design
 
 This section is on the UI design for forecasting temperature and rainfall (univariate) for the next few years.
+
+![](images/clipboard-3090204331.png){width="476"}
+
+We can also do STL decomposition and ACF checks on the time series data.
+
+![](images/clipboard-1122580691.png){width="476"}
+
+## 4.2 Forecasting Models
+
+ETS model and its parameters.
+
+![](images/clipboard-3556671772.png){width="500"}
+
+ARIMA model and its parameters
+
+![](images/clipboard-3817120540.png){width="501"}
+
+# 
 
 # 5 Forecasting method
 

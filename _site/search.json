@@ -28,6 +28,13 @@
     "text": "3.2 Rainfall time-series analysis\nLet’s break down the rainfall time-series analysis to look at the seasonal, trend and residual components.\n\n\nShow the code\ndata_ts.ts = ts(data_EDA$Rainfall, frequency = 12)\ndecomposed &lt;- decompose(data_ts.ts)\n\n# Plot the decomposed components\nautoplot(decomposed) +\n  ggtitle(\"Decomposition of the Temperature time-series data\") +\n  xlab(\"Year\")\n\n\n\n\n\nLet’s substract seasonality\n\n\nShow the code\ndata_ts.adj &lt;- data_ts.ts - decomposed$seasonal\nautoplot(data_ts.adj) + \n  ggtitle(\"Decomposition of Rainfall time-series data without seasonal components\") +\n  xlab(\"Year\") +\n  ylab(\"Rainfall (mm)\")\n\n\n\n\n\nSimilarly with trend\n\n\nShow the code\ndata_ts.adj &lt;- data_ts.ts - decomposed$trend\nautoplot(data_ts.adj) +\n  ggtitle(\"Decomposition of Rainfall time-series data without trend components\") +\n  xlab(\"Year\") +\n  ylab(\"Rainfall variation (mm)\")\n\n\n\n\n\nLet’s look at the ACF and PACF plots\n\n\nShow the code\n ggtsdisplay(difference(data_EDA$Rainfall, 12),\n               plot_type='partial', lag=36) +\n  labs(title=\"Seasonally differenced\", y=\"\")"
   },
   {
+    "objectID": "Prototype/Forecast.html#forecasting-models",
+    "href": "Prototype/Forecast.html#forecasting-models",
+    "title": "Prototype: Time Series Forecasting",
+    "section": "4.2 Forecasting Models",
+    "text": "4.2 Forecasting Models\nETS model and its parameters.\n\nARIMA model and its parameters"
+  },
+  {
     "objectID": "Prototype/Forecast.html#forecast-using-exponential-smoothing-state-space-model",
     "href": "Prototype/Forecast.html#forecast-using-exponential-smoothing-state-space-model",
     "title": "Prototype: Time Series Forecasting",
