@@ -33,9 +33,9 @@ website:
           - text: Forecast
             href: Prototype/Forecast.html
       - text: Poster
-        href: VAP_Poster.pdf 
+        href: Poster.html
       - text: User Guide
-        href: User_Guide.pdf
+        href: User_Guide.html
         target: _blank
       - text: Shiny App
         href: https://chockwankee.shinyapps.io/Group11_VAP_ShinyApp_Windows/
