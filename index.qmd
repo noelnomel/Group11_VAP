@@ -8,9 +8,19 @@ title: "The heat is on! <br> Singapore’s Race Against Climate Change"
   background-image: url("https://watersensitivecities.org.au/wp-content/uploads/2019/12/Heat-wave.jpg");
   background-size: cover;
   background-repeat: no-repeat;
-
 }
 
 </style>
 ```
 Join us in our journey to analyse the weather conditions in Singapore and predict the weather in the next few years.
+
+
+
+
+**Team Members:**
+
+-   Chock Wan Kee (Master of IT in Business (Analytics) \@ SMU)
+
+-   Noel Ng (Master of IT in Business (Analytics) \@ SMU)
+
+-   Vanessa Heng (Master of IT in Business (Analytics) \@ SMU)
