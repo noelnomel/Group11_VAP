@@ -14,7 +14,7 @@ editor: visual
 The code below uses `p_load()` of the Pacman package to check if all the required packages are installed on the laptop. If they are, then they will be launched into the R environment.
 
 |                         Package                         | Description                                                                                                  |
-|:-------------------------------------------------------:|--------------------------------------------------------------------------------------------------------------|
+|:-----------------------:|-----------------------------------------------|
 |       [**tidyverse**](https://www.tidyverse.org/)       | A collection of core packages designed for data science used extensively for data preparation and wrangling. |
 |      [**tsibble**](https://tsibble.tidyverts.org/)      | For tidy temporal data with wrangling tools                                                                  |
 | [**fable**](https://fable.tidyverts.org/)**, forecast** | A collection of commonly used univariate and multivariate time series forecasting models.                    |
@@ -45,6 +45,7 @@ data_ts <- merged_data %>%
             MinTemp = min(MinTemp),
             Rainfall = mean(TotalRainfall)) %>% 
   mutate(YearMonth = yearmonth(Date)) %>% 
+  filter(Date > '2013-1-1') %>% 
   ungroup()
 
 data_EDA <- data_ts %>% 

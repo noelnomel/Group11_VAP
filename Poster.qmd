@@ -1,1 +1,3 @@
-<iframe src="VAP_Poster.pdf" width="1000px" height="800px"></iframe>
+<iframe src="VAP_Poster.jpg" width="1500px" height="800px">
+
+</iframe>

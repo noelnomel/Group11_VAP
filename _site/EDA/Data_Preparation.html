@@ -348,192 +348,197 @@ $ Region  &lt;chr&gt; "North", "North-East", "West", "East", "West", "West", "Ea
 <p>Let’s use the <code>coalesce()</code> function to copy the values from the second set of temperature values to the first set and then deselect the second set of columns. We are also not focusing on the wind speed variables, hence we will deselect the 2 variables on wind speed.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>mean_temperature_c <span class="ot">&lt;-</span> <span class="fu">coalesce</span>(data<span class="sc">$</span>mean_temperature_c, </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                                    data<span class="sc">$</span>mean_temperature_a_c) </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>maximum_temperature_c <span class="ot">&lt;-</span> <span class="fu">coalesce</span>(data<span class="sc">$</span>maximum_temperature_c, </span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                                       data<span class="sc">$</span>maximum_temperature_a_c)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>minimum_temperature_c <span class="ot">&lt;-</span> <span class="fu">coalesce</span>(data<span class="sc">$</span>minimum_temperature_c,     </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                                       data<span class="sc">$</span>minimum_temperature_a_c)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span> </span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(mean_temperature_a_c, </span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>            maximum_temperature_a_c, </span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            minimum_temperature_a_c, </span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>            mean_wind_speed_km_h, </span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>            max_wind_speed_km_h))</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                                    data<span class="sc">$</span>mean_temperature_a_c) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in data$mean_temperature_c: object of type 'closure' is not subsettable</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>maximum_temperature_c <span class="ot">&lt;-</span> <span class="fu">coalesce</span>(data<span class="sc">$</span>maximum_temperature_c, </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>                                       data<span class="sc">$</span>maximum_temperature_a_c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in data$maximum_temperature_c: object of type 'closure' is not subsettable</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>data<span class="sc">$</span>minimum_temperature_c <span class="ot">&lt;-</span> <span class="fu">coalesce</span>(data<span class="sc">$</span>minimum_temperature_c,     </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                                       data<span class="sc">$</span>minimum_temperature_a_c)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in data$minimum_temperature_c: object of type 'closure' is not subsettable</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(mean_temperature_a_c, </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>            maximum_temperature_a_c, </span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>            minimum_temperature_a_c, </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>            mean_wind_speed_km_h, </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>            max_wind_speed_km_h))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-error">
+<pre><code>Error in UseMethod("select"): no applicable method for 'select' applied to an object of class "function"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>function (..., list = character(), package = NULL, lib.loc = NULL, verbose = getOption("verbose"), 
+    envir = .GlobalEnv, overwrite = TRUE)  </code></pre>
+</div>
 </div>
 </section>
 <section id="remove-weird-characters" class="level3">
 <h3 class="anchored" data-anchor-id="remove-weird-characters">3.3.2 Remove weird characters</h3>
 <p>There are some weird characters (‘097’) in the data frame. Let’s replace them with NA.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_all</span>(<span class="sc">~</span> <span class="fu">ifelse</span>(. <span class="sc">==</span> <span class="st">"\u0097"</span>, <span class="cn">NA</span>, .))</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_all</span>(<span class="sc">~</span> <span class="fu">ifelse</span>(. <span class="sc">==</span> <span class="st">"\u0097"</span>, <span class="cn">NA</span>, .))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="tidy-the-data" class="level3">
 <h3 class="anchored" data-anchor-id="tidy-the-data">3.3.3 Tidy the data</h3>
 <p>Finally, let’s clean up the weather data and create a column for date, change the necessary columns to numeric, and shorten the column names for simplicity.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">station =</span> station,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">year =</span> <span class="fu">as.numeric</span>(year),</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">Date =</span> <span class="fu">make_date</span>(<span class="at">year =</span> year, <span class="at">month =</span> month, <span class="at">day =</span> <span class="dv">1</span>),</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">month =</span> lubridate<span class="sc">::</span><span class="fu">month</span>(Date, <span class="at">label =</span> <span class="cn">TRUE</span>),         </span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">day =</span> <span class="fu">as.numeric</span>(day),</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">daily_rainfall_total_mm =</span> <span class="fu">as.numeric</span>(daily_rainfall_total_mm), </span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">highest_30_min_rainfall_mm =</span> <span class="fu">as.numeric</span>(highest_30_min_rainfall_mm), </span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">highest_60_min_rainfall_mm =</span> <span class="fu">as.numeric</span>(highest_60_min_rainfall_mm),</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">highest_120_min_rainfall_mm =</span> <span class="fu">as.numeric</span>(highest_120_min_rainfall_mm),</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">mean_temperature_c =</span> <span class="fu">as.numeric</span>(mean_temperature_c), </span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">maximum_temperature_c =</span> <span class="fu">as.numeric</span>(maximum_temperature_c), </span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">minimum_temperature_c =</span> <span class="fu">as.numeric</span>(minimum_temperature_c)) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Station =</span> station,</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> year,</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">Month =</span> month,</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">Day =</span> day,</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Rainfall =</span> daily_rainfall_total_mm,</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">Rainfall30 =</span> highest_30_min_rainfall_mm,</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">Rainfall60 =</span> highest_60_min_rainfall_mm,</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">Rainfall120 =</span> highest_120_min_rainfall_mm,</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">MeanTemperature =</span> mean_temperature_c,</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">MaxTemperature =</span> maximum_temperature_c,</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">MinTemperature =</span> minimum_temperature_c</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">subset</span>(<span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(mean_temperature_a_c,</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>                     maximum_temperature_a_c,</span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>                     minimum_temperature_a_c, </span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>                     mean_wind_speed_km_h, </span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>                     max_wind_speed_km_h))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> data <span class="sc">%&gt;%</span> </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">station =</span> station,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>       <span class="at">year =</span> <span class="fu">as.numeric</span>(year),</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">Date =</span> <span class="fu">make_date</span>(<span class="at">year =</span> year, <span class="at">month =</span> month, <span class="at">day =</span> <span class="dv">1</span>),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">month =</span> lubridate<span class="sc">::</span><span class="fu">month</span>(Date, <span class="at">label =</span> <span class="cn">TRUE</span>),         </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">day =</span> <span class="fu">as.numeric</span>(day),</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">daily_rainfall_total_mm =</span> <span class="fu">as.numeric</span>(daily_rainfall_total_mm), </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">highest_30_min_rainfall_mm =</span> <span class="fu">as.numeric</span>(highest_30_min_rainfall_mm), </span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">highest_60_min_rainfall_mm =</span> <span class="fu">as.numeric</span>(highest_60_min_rainfall_mm),</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">highest_120_min_rainfall_mm =</span> <span class="fu">as.numeric</span>(highest_120_min_rainfall_mm),</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">mean_temperature_c =</span> <span class="fu">as.numeric</span>(mean_temperature_c), </span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">maximum_temperature_c =</span> <span class="fu">as.numeric</span>(maximum_temperature_c), </span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">minimum_temperature_c =</span> <span class="fu">as.numeric</span>(minimum_temperature_c)) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Station =</span> station,</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">Year =</span> year,</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">Month =</span> month,</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">Day =</span> day,</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">Rainfall =</span> daily_rainfall_total_mm,</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">Rainfall30 =</span> highest_30_min_rainfall_mm,</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">Rainfall60 =</span> highest_60_min_rainfall_mm,</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">Rainfall120 =</span> highest_120_min_rainfall_mm,</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">MeanTemperature =</span> mean_temperature_c,</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">MaxTemperature =</span> maximum_temperature_c,</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">MinTemperature =</span> minimum_temperature_c</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">subset</span>(<span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(mean_temperature_a_c,</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>                     maximum_temperature_a_c,</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>                     minimum_temperature_a_c, </span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>                     mean_wind_speed_km_h, </span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>                     max_wind_speed_km_h))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="merge-datasets" class="level3">
 <h3 class="anchored" data-anchor-id="merge-datasets">3.3.4 Merge datasets</h3>
 <p>Let’s join the weather data with its region information using the common variable ‘Station’.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> <span class="fu">merge</span>(weather, region, <span class="at">by=</span> <span class="st">"Station"</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>weather <span class="ot">&lt;-</span> <span class="fu">merge</span>(weather, region, <span class="at">by=</span> <span class="st">"Station"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(weather)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="create-subsets-of-data" class="level3">
 <h3 class="anchored" data-anchor-id="create-subsets-of-data">3.3.5 Create subsets of data</h3>
 <p>Let’s create subsets of weather data for only Temperature or Rainfall and save them as RDS files for easy loading when we are developing for the subsequent analysis.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>Temp_YM <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span> </span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(Station, Region, Year, Month) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">reframe</span>(<span class="at">Date =</span> Date,            </span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">MeanTemp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MeanTemperature, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">MaxTemp =</span> <span class="fu">round</span>(<span class="fu">max</span>(MaxTemperature, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">MinTemp =</span> <span class="fu">round</span>(<span class="fu">min</span>(MinTemperature, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>) ) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>   <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(MeanTemp))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in eval(expr, envir, enclos): object 'weather' not found</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Temp_YM, <span class="st">"data/temperature.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in eval(expr, envir, enclos): object 'Temp_YM' not found</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>Rainfall_YM <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span> </span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(Station, Region, Year, Month) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">reframe</span>(<span class="at">Date =</span> Date,</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">TotalRainfall =</span> <span class="fu">round</span>(<span class="fu">sum</span>(Rainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">TotalRainfall30 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(Rainfall30, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">TotalRainfall60 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(Rainfall60, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">TotalRainfall120 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(Rainfall120, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>   <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(TotalRainfall))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in eval(expr, envir, enclos): object 'weather' not found</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Rainfall_YM, <span class="st">"data/rainfall.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-error">
-<pre><code>Error in eval(expr, envir, enclos): object 'Rainfall_YM' not found</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>Temp_YM <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(Station, Region, Year, Month) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>   <span class="fu">reframe</span>(<span class="at">Date =</span> Date,            </span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">MeanTemp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MeanTemperature, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">MaxTemp =</span> <span class="fu">round</span>(<span class="fu">max</span>(MaxTemperature, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">MinTemp =</span> <span class="fu">round</span>(<span class="fu">min</span>(MinTemperature, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>) ) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>   <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(MeanTemp))</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Temp_YM, <span class="st">"data/temperature.rds"</span>)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>Rainfall_YM <span class="ot">&lt;-</span> weather <span class="sc">%&gt;%</span> </span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>   <span class="fu">group_by</span>(Station, Region, Year, Month) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>   <span class="fu">reframe</span>(<span class="at">Date =</span> Date,</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>           <span class="at">TotalRainfall =</span> <span class="fu">round</span>(<span class="fu">sum</span>(Rainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>           <span class="at">TotalRainfall30 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(Rainfall30, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">TotalRainfall60 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(Rainfall60, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>           <span class="at">TotalRainfall120 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(Rainfall120, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>   <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(TotalRainfall))</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Rainfall_YM, <span class="st">"data/rainfall.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Check to ensure there is no missing data in Temp_YM and Rainfall_YM.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vis_miss</span>(Temp_YM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vis_miss</span>(Temp_YM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in eval(expr, envir, enclos): object 'Temp_YM' not found</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vis_miss</span>(Rainfall_YM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">vis_miss</span>(Rainfall_YM)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in eval(expr, envir, enclos): object 'Rainfall_YM' not found</code></pre>
 </div>
 </div>
 <p>Finally, we create further subsets to be used in Confirmatory Data Analysis:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>temperature <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(<span class="st">"data/temperature.rds"</span>)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>Temp_Annual <span class="ot">&lt;-</span> temperature <span class="sc">%&gt;%</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Region, Year) <span class="sc">%&gt;%</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Avg_Mean_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MeanTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Max_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MaxTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Min_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MinTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">Max_Temp =</span> <span class="fu">round</span>(<span class="fu">max</span>(MaxTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">Min_Temp =</span> <span class="fu">round</span>(<span class="fu">min</span>(MinTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Avg_Mean_Temp))</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Temp_Annual, <span class="st">"data/temp_annual.rds"</span>)</span>
-<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>Temp_Monthly <span class="ot">&lt;-</span> temperature <span class="sc">%&gt;%</span></span>
-<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Region, Year, Month) <span class="sc">%&gt;%</span></span>
-<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Avg_Mean_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MeanTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Max_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MaxTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Min_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MinTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">Max_Temp =</span> <span class="fu">round</span>(<span class="fu">max</span>(MaxTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">Min_Temp =</span> <span class="fu">round</span>(<span class="fu">min</span>(MinTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Avg_Mean_Temp))</span>
-<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Temp_Monthly, <span class="st">"data/temp_monthly.rds"</span>)</span>
-<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>rainfall <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(<span class="st">"data/rainfall.rds"</span>)</span>
-<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>Rainfall_Annual <span class="ot">&lt;-</span> rainfall <span class="sc">%&gt;%</span></span>
-<span id="cb21-32"><a href="#cb21-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Region, Year) <span class="sc">%&gt;%</span> </span>
-<span id="cb21-33"><a href="#cb21-33" aria-hidden="true" tabindex="-1"></a>   <span class="fu">reframe</span>(<span class="at">Total_Rf =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-34"><a href="#cb21-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_30 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall30, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-35"><a href="#cb21-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_60 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall60, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-36"><a href="#cb21-36" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_120 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall120, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-37"><a href="#cb21-37" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-38"><a href="#cb21-38" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf30 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall30, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-39"><a href="#cb21-39" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf60 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall60, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-40"><a href="#cb21-40" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf120 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall120, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-41"><a href="#cb21-41" aria-hidden="true" tabindex="-1"></a>           <span class="at">Min_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">min</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-42"><a href="#cb21-42" aria-hidden="true" tabindex="-1"></a>           <span class="at">Max_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">max</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb21-43"><a href="#cb21-43" aria-hidden="true" tabindex="-1"></a>   <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb21-44"><a href="#cb21-44" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb21-45"><a href="#cb21-45" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Total_Rf))</span>
-<span id="cb21-46"><a href="#cb21-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-47"><a href="#cb21-47" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Rainfall_Annual, <span class="st">"data/rf_annual.rds"</span>)</span>
-<span id="cb21-48"><a href="#cb21-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-49"><a href="#cb21-49" aria-hidden="true" tabindex="-1"></a>Rainfall_Monthly <span class="ot">&lt;-</span> rainfall <span class="sc">%&gt;%</span></span>
-<span id="cb21-50"><a href="#cb21-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Region, Year, Month) <span class="sc">%&gt;%</span> </span>
-<span id="cb21-51"><a href="#cb21-51" aria-hidden="true" tabindex="-1"></a>   <span class="fu">reframe</span>(<span class="at">Total_Rf =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-52"><a href="#cb21-52" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_30 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall30, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-53"><a href="#cb21-53" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_60 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall60, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-54"><a href="#cb21-54" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_120 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall120, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-55"><a href="#cb21-55" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-56"><a href="#cb21-56" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf30 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall30, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-57"><a href="#cb21-57" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf60 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall60, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-58"><a href="#cb21-58" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf120 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall120, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-59"><a href="#cb21-59" aria-hidden="true" tabindex="-1"></a>           <span class="at">Min_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">min</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
-<span id="cb21-60"><a href="#cb21-60" aria-hidden="true" tabindex="-1"></a>           <span class="at">Max_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">max</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb21-61"><a href="#cb21-61" aria-hidden="true" tabindex="-1"></a>   <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb21-62"><a href="#cb21-62" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb21-63"><a href="#cb21-63" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Total_Rf))</span>
-<span id="cb21-64"><a href="#cb21-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-65"><a href="#cb21-65" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Rainfall_Monthly, <span class="st">"data/rf_monthly.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>temperature <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(<span class="st">"data/temperature.rds"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>Temp_Annual <span class="ot">&lt;-</span> temperature <span class="sc">%&gt;%</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Region, Year) <span class="sc">%&gt;%</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Avg_Mean_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MeanTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Max_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MaxTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Min_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MinTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">Max_Temp =</span> <span class="fu">round</span>(<span class="fu">max</span>(MaxTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">Min_Temp =</span> <span class="fu">round</span>(<span class="fu">min</span>(MinTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Avg_Mean_Temp))</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Temp_Annual, <span class="st">"data/temp_annual.rds"</span>)</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>Temp_Monthly <span class="ot">&lt;-</span> temperature <span class="sc">%&gt;%</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Region, Year, Month) <span class="sc">%&gt;%</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Avg_Mean_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MeanTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Max_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MaxTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>            <span class="at">Avg_Min_Temp =</span> <span class="fu">round</span>(<span class="fu">mean</span>(MinTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>            <span class="at">Max_Temp =</span> <span class="fu">round</span>(<span class="fu">max</span>(MaxTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">Min_Temp =</span> <span class="fu">round</span>(<span class="fu">min</span>(MinTemp, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Avg_Mean_Temp))</span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Temp_Monthly, <span class="st">"data/temp_monthly.rds"</span>)</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>rainfall <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(<span class="st">"data/rainfall.rds"</span>)</span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>Rainfall_Annual <span class="ot">&lt;-</span> rainfall <span class="sc">%&gt;%</span></span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Region, Year) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>   <span class="fu">reframe</span>(<span class="at">Total_Rf =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_30 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall30, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_60 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall60, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_120 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall120, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf30 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall30, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf60 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall60, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf120 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall120, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>           <span class="at">Min_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">min</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a>           <span class="at">Max_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">max</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a>   <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Total_Rf))</span>
+<span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Rainfall_Annual, <span class="st">"data/rf_annual.rds"</span>)</span>
+<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-49"><a href="#cb23-49" aria-hidden="true" tabindex="-1"></a>Rainfall_Monthly <span class="ot">&lt;-</span> rainfall <span class="sc">%&gt;%</span></span>
+<span id="cb23-50"><a href="#cb23-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Station, Region, Year, Month) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-51"><a href="#cb23-51" aria-hidden="true" tabindex="-1"></a>   <span class="fu">reframe</span>(<span class="at">Total_Rf =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-52"><a href="#cb23-52" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_30 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall30, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-53"><a href="#cb23-53" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_60 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall60, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-54"><a href="#cb23-54" aria-hidden="true" tabindex="-1"></a>           <span class="at">Total_Rf_120 =</span> <span class="fu">round</span>(<span class="fu">sum</span>(TotalRainfall120, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-55"><a href="#cb23-55" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-56"><a href="#cb23-56" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf30 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall30, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-57"><a href="#cb23-57" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf60 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall60, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-58"><a href="#cb23-58" aria-hidden="true" tabindex="-1"></a>           <span class="at">Avg_Total_Rf120 =</span> <span class="fu">round</span>(<span class="fu">mean</span>(TotalRainfall120, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-59"><a href="#cb23-59" aria-hidden="true" tabindex="-1"></a>           <span class="at">Min_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">min</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>),</span>
+<span id="cb23-60"><a href="#cb23-60" aria-hidden="true" tabindex="-1"></a>           <span class="at">Max_Total_Rf =</span> <span class="fu">round</span>(<span class="fu">max</span>(TotalRainfall, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-61"><a href="#cb23-61" aria-hidden="true" tabindex="-1"></a>   <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb23-62"><a href="#cb23-62" aria-hidden="true" tabindex="-1"></a>   <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb23-63"><a href="#cb23-63" aria-hidden="true" tabindex="-1"></a>   <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Total_Rf))</span>
+<span id="cb23-64"><a href="#cb23-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-65"><a href="#cb23-65" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(Rainfall_Monthly, <span class="st">"data/rf_monthly.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
